@@ -1,7 +1,5 @@
 -- Database Schema for EscortProvider
-
-CREATE DATABASE IF NOT EXISTS escort_provider;
-USE escort_provider;
+-- NOTE: Create the database manually in CPanel first, then import this file into it.
 
 -- States Table
 CREATE TABLE IF NOT EXISTS states (
