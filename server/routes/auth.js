@@ -1,7 +1,18 @@
-import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
+import nodemailer from 'nodemailer';
 import pool from '../db.js';
+
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST,
+  port: parseInt(process.env.EMAIL_PORT),
+  secure: true, // true for 465, false for other ports
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 const router = express.Router();
 
@@ -77,7 +88,7 @@ router.put('/profile', async (req, res) => {
   }
 });
 
-// Forgot Password (Security Hardened)
+// Forgot Password (Real Implementation)
 router.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
   if (!email || !email.includes('@')) {
@@ -85,11 +96,44 @@ router.post('/forgot-password', async (req, res) => {
   }
   try {
     const [users] = await pool.execute('SELECT id FROM users WHERE email = ?', [email]);
-    // Security: Always return the same message to prevent user enumeration
+    
+    // Security: Always return success message to prevent user enumeration
     if (users.length > 0) {
-      // In production, generate token and send mail here
-      console.log(`Password reset requested for: ${email}`);
+      const token = crypto.randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 3600000); // 1 hour from now
+
+      // Save token to DB
+      await pool.execute(
+        'INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)',
+        [email, token, expiresAt]
+      );
+
+      // Send Email
+      const resetLink = `https://excortprovider.com/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
+      
+      const mailOptions = {
+        from: `"EscortProvider Support" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: 'Password Reset Instructions - EscortProvider',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee;">
+            <h2 style="color: #ff2d55; text-align: center;">EscortProvider</h2>
+            <p>Hello,</p>
+            <p>You requested to reset your password. Click the button below to set a new password. This link will expire in 1 hour.</p>
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${resetLink}" style="background-color: #ff2d55; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">Reset Password</a>
+            </div>
+            <p>If you didn't request this, you can safely ignore this email.</p>
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+            <p style="font-size: 12px; color: #888;">&copy; 2024 EscortProvider. All rights reserved.</p>
+          </div>
+        `,
+      };
+
+      await transporter.sendMail(mailOptions);
+      console.log(`Password reset email sent to: ${email}`);
     }
+    
     res.json({ message: 'If an account exists with this email, you will receive reset instructions shortly.' });
   } catch (err) {
     console.error('Forgot password error:', err);
@@ -97,15 +141,35 @@ router.post('/forgot-password', async (req, res) => {
   }
 });
 
-// Reset Password (Skeleton)
+// Reset Password (Verify Token)
 router.post('/reset-password', async (req, res) => {
-  const { email, newPassword } = req.body;
+  const { email, token, newPassword } = req.body;
+  
+  if (!email || !token || !newPassword) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
   try {
+    // 1. Check if token exists and is valid
+    const [resets] = await pool.execute(
+      'SELECT id FROM password_resets WHERE email = ? AND token = ? AND expires_at > NOW()',
+      [email, token]
+    );
+
+    if (resets.length === 0) {
+      return res.status(400).json({ error: 'Invalid or expired reset token. Please request a new one.' });
+    }
+
+    // 2. Hash and Update
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await pool.execute('UPDATE users SET password = ? WHERE email = ?', [hashedPassword, email]);
+    
+    // 3. Cleanup: Delete the used token
+    await pool.execute('DELETE FROM password_resets WHERE email = ?', [email]);
+
     res.json({ message: 'Password has been reset successfully. You can now log in.' });
   } catch (err) {
-    console.error("Forgot password error:", err);
+    console.error("Reset password error:", err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

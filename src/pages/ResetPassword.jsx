@@ -12,6 +12,7 @@ export default function ResetPassword() {
   const [error, setError] = useState(null);
 
   const email = searchParams.get('email');
+  const token = searchParams.get('token');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,7 +25,8 @@ export default function ResetPassword() {
     setMessage(null);
     try {
       const data = await api.post('/auth/reset-password', { 
-        email, 
+        email,
+        token,
         newPassword 
       });
       setMessage(data.message);
