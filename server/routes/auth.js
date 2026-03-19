@@ -2,18 +2,10 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import pool from '../db.js';
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: parseInt(process.env.EMAIL_PORT),
-  secure: true, // true for 465, false for other ports
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const router = express.Router();
 
@@ -112,9 +104,9 @@ router.post('/forgot-password', async (req, res) => {
       // Send Email
       const resetLink = `https://excortprovider.com/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
       
-      const mailOptions = {
-        from: `"EscortProvider Support" <${process.env.EMAIL_USER}>`,
-        to: email,
+      await resend.emails.send({
+        from: 'EscortProvider <onboarding@resend.dev>', // You can change this to your domain once verified in Resend
+        to: [email],
         subject: 'Password Reset Instructions - EscortProvider',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee;">
@@ -129,9 +121,7 @@ router.post('/forgot-password', async (req, res) => {
             <p style="font-size: 12px; color: #888;">&copy; 2024 EscortProvider. All rights reserved.</p>
           </div>
         `,
-      };
-
-      await transporter.sendMail(mailOptions);
+      });
       console.log(`Password reset email sent to: ${email}`);
     }
     
