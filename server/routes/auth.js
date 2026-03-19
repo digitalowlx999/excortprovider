@@ -122,7 +122,6 @@ router.post('/forgot-password', async (req, res) => {
           </div>
         `,
       });
-      console.log(`Password reset email sent to: ${email}`);
     }
     
     res.json({ message: 'If an account exists with this email, you will receive reset instructions shortly.' });

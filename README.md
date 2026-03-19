@@ -9,10 +9,6 @@ A premium full-stack classified ads platform for escorts.
 npm install
 ```
 
-### 2. Configure Supabase
-- Create a new project at [supabase.com](https://supabase.com)
-- Copy `.env.example` to `.env.local` and fill in your Supabase URL and Anon Key
-- Run the SQL schema from `brain/database_schema.sql` in your Supabase SQL Editor
 
 ### 3. Start Development Server
 ```bash
