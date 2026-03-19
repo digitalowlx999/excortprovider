@@ -67,14 +67,22 @@ export default function Navbar() {
 
       {/* Mobile Menu Overlay */}
       <div className={`md:hidden fixed inset-0 top-20 bg-white z-40 transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-        <div className="p-6 space-y-8 h-full overflow-y-auto bg-slate-50/50">
+        <div className="p-6 space-y-8 h-full overflow-y-auto bg-white">
           <div className="space-y-4">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Main Navigation</p>
             <div className="grid grid-cols-1 gap-2">
-               <Link to="/" className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm font-bold text-slate-700">
+               <Link 
+                 to="/" 
+                 onClick={() => setIsMenuOpen(false)}
+                 className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-gray-100 font-bold text-slate-700 active:scale-95 transition-all"
+               >
                   <HomeIcon size={20} className="text-primary" /> Home
                </Link>
-               <Link to="/cities" className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm font-bold text-slate-700">
+               <Link 
+                 to="/cities" 
+                 onClick={() => setIsMenuOpen(false)}
+                 className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-gray-100 font-bold text-slate-700 active:scale-95 transition-all"
+               >
                   <MapPin size={20} className="text-primary" /> Cities
                </Link>
             </div>
@@ -85,24 +93,44 @@ export default function Navbar() {
             <div className="grid grid-cols-1 gap-2">
                {!isLoggedIn ? (
                  <>
-                   <Link to="/login" className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm font-bold text-slate-700">
+                   <Link 
+                     to="/login" 
+                     onClick={() => setIsMenuOpen(false)}
+                     className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-gray-100 font-bold text-slate-700 active:scale-95 transition-all"
+                   >
                       <User size={20} className="text-slate-400" /> Login
                    </Link>
-                   <Link to="/register" className="flex items-center gap-4 p-4 bg-primary text-white rounded-2xl shadow-lg shadow-primary/20 font-bold">
+                   <Link 
+                     to="/register" 
+                     onClick={() => setIsMenuOpen(false)}
+                     className="flex items-center gap-4 p-4 bg-primary text-white rounded-2xl shadow-lg shadow-primary/20 font-bold active:scale-95 transition-all"
+                   >
                       <Plus size={20} /> Join the Community
                    </Link>
                  </>
                ) : (
                  <>
-                   <Link to="/dashboard" className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm font-bold text-slate-700">
+                   <Link 
+                     to="/dashboard" 
+                     onClick={() => setIsMenuOpen(false)}
+                     className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-gray-100 font-bold text-slate-700 active:scale-95 transition-all"
+                   >
                       <LayoutDashboard size={20} className="text-primary" /> Dashboard
                    </Link>
-                   <Link to="/dashboard/wallet" className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm font-bold text-slate-700">
+                   <Link 
+                     to="/dashboard/wallet" 
+                     onClick={() => setIsMenuOpen(false)}
+                     className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-gray-100 font-bold text-slate-700 active:scale-95 transition-all"
+                   >
                       <PlusCircle size={20} className="text-emerald-500" /> Wallet / Deposit
                    </Link>
                  </>
                )}
-               <Link to="/dashboard/post-ad" className="flex items-center gap-4 p-4 bg-slate-900 text-white rounded-2xl shadow-xl font-bold mt-4">
+               <Link 
+                 to="/dashboard/post-ad" 
+                 onClick={() => setIsMenuOpen(false)}
+                 className="flex items-center gap-4 p-4 bg-slate-900 text-white rounded-2xl shadow-xl font-bold mt-4 active:scale-95 transition-all"
+               >
                   <PlusCircle size={20} /> Post New Ad
                </Link>
             </div>
