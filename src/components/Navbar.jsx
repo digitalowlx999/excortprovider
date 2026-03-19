@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, User, PlusCircle, LayoutDashboard } from 'lucide-react';
+import { Menu, X, User, PlusCircle, LayoutDashboard, Home as HomeIcon, MapPin, Plus } from 'lucide-react';
 
 export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     setIsLoggedIn(!!token);
+    setIsMenuOpen(false); // Close menu on route change
   }, [location]);
 
   return (
@@ -53,9 +55,57 @@ export default function Navbar() {
           </div>
 
           <div className="md:hidden">
-            <button className="p-2 text-slate-600">
-              <Menu size={24} />
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 text-slate-600 hover:text-primary transition-colors"
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu Overlay */}
+      <div className={`md:hidden fixed inset-0 top-20 bg-white z-40 transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="p-6 space-y-8 h-full overflow-y-auto bg-slate-50/50">
+          <div className="space-y-4">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Main Navigation</p>
+            <div className="grid grid-cols-1 gap-2">
+               <Link to="/" className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm font-bold text-slate-700">
+                  <HomeIcon size={20} className="text-primary" /> Home
+               </Link>
+               <Link to="/cities" className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm font-bold text-slate-700">
+                  <MapPin size={20} className="text-primary" /> Cities
+               </Link>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Account & Actions</p>
+            <div className="grid grid-cols-1 gap-2">
+               {!isLoggedIn ? (
+                 <>
+                   <Link to="/login" className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm font-bold text-slate-700">
+                      <User size={20} className="text-slate-400" /> Login
+                   </Link>
+                   <Link to="/register" className="flex items-center gap-4 p-4 bg-primary text-white rounded-2xl shadow-lg shadow-primary/20 font-bold">
+                      <Plus size={20} /> Join the Community
+                   </Link>
+                 </>
+               ) : (
+                 <>
+                   <Link to="/dashboard" className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm font-bold text-slate-700">
+                      <LayoutDashboard size={20} className="text-primary" /> Dashboard
+                   </Link>
+                   <Link to="/dashboard/wallet" className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm font-bold text-slate-700">
+                      <PlusCircle size={20} className="text-emerald-500" /> Wallet / Deposit
+                   </Link>
+                 </>
+               )}
+               <Link to="/dashboard/post-ad" className="flex items-center gap-4 p-4 bg-slate-900 text-white rounded-2xl shadow-xl font-bold mt-4">
+                  <PlusCircle size={20} /> Post New Ad
+               </Link>
+            </div>
           </div>
         </div>
       </div>
