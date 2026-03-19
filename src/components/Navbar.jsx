@@ -1,11 +1,20 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User, PlusCircle, LayoutDashboard, Home as HomeIcon, MapPin, Plus } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, User, PlusCircle, LayoutDashboard, Home as HomeIcon, MapPin, Plus, LogOut } from 'lucide-react';
 
 export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setIsLoggedIn(false);
+    setIsMenuOpen(false);
+    navigate('/');
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -143,8 +152,15 @@ export default function Navbar() {
                      className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-gray-50 font-bold text-slate-700 active:scale-95 transition-all"
                    >
                       <PlusCircle size={18} className="text-emerald-500" />
-                      <span className="text-sm">Wallet & Deposits</span>
-                   </Link>
+                       <span className="text-sm">Wallet & Deposits</span>
+                    </Link>
+                    <button 
+                      onClick={handleLogout}
+                      className="flex items-center gap-3 p-3 bg-red-50 text-red-600 rounded-xl border border-red-100 font-bold active:scale-95 transition-all"
+                    >
+                       <LogOut size={18} />
+                       <span className="text-sm">Logout</span>
+                    </button>
                  </>
                )}
             </div>
