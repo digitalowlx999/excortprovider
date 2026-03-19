@@ -65,51 +65,66 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
-      <div className={`md:hidden fixed top-20 left-0 right-0 bottom-0 bg-white z-[100] transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-        <div className="p-6 space-y-8 h-full overflow-y-auto bg-white pb-24">
-          <div className="space-y-4">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Main Navigation</p>
-            <div className="grid grid-cols-1 gap-3">
+      {/* Mobile Menu Overlay - Full Screen Compressed */}
+      <div 
+        className={`md:hidden fixed inset-0 bg-white z-[9999] transition-all duration-300 ease-in-out ${isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+      >
+        {/* Compact Header */}
+        <div className="flex justify-between items-center h-16 px-4 border-b border-gray-50">
+          <Link to="/" onClick={() => setIsMenuOpen(false)} className="text-xl font-black tracking-tighter text-primary">
+            Escort<span className="text-slate-900">Provider</span>
+          </Link>
+          <button 
+            onClick={() => setIsMenuOpen(false)}
+            className="p-2 text-slate-400 hover:text-primary transition-colors"
+          >
+            <X size={24} />
+          </button>
+        </div>
+
+        <div className="p-4 space-y-6 h-[calc(100vh-4rem)] overflow-y-auto bg-white">
+          <div className="space-y-2">
+            <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 ml-2">Navigation</p>
+            <div className="grid grid-cols-2 gap-2">
                <Link 
                  to="/" 
                  onClick={() => setIsMenuOpen(false)}
-                 className="flex items-center gap-4 p-5 bg-slate-50 rounded-[1.5rem] border border-gray-100 font-bold text-slate-700 active:scale-95 transition-all"
+                 className="flex flex-col items-center justify-center gap-2 p-4 bg-slate-50 rounded-2xl border border-gray-50 font-bold text-slate-700 active:scale-95 transition-all"
                >
-                  <HomeIcon size={22} className="text-primary" /> 
-                  <span className="text-lg">Home</span>
+                  <HomeIcon size={20} className="text-primary" /> 
+                  <span className="text-xs">Home</span>
                </Link>
                <Link 
                  to="/cities" 
                  onClick={() => setIsMenuOpen(false)}
-                 className="flex items-center gap-4 p-5 bg-slate-50 rounded-[1.5rem] border border-gray-100 font-bold text-slate-700 active:scale-95 transition-all"
+                 className="flex flex-col items-center justify-center gap-2 p-4 bg-slate-50 rounded-2xl border border-gray-50 font-bold text-slate-700 active:scale-95 transition-all"
                >
-                  <MapPin size={22} className="text-primary" />
-                  <span className="text-lg">Cities</span>
+                  <MapPin size={20} className="text-primary" />
+                  <span className="text-xs">Cities</span>
                </Link>
             </div>
           </div>
 
-          <div className="space-y-4">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Account & Actions</p>
-            <div className="grid grid-cols-1 gap-3">
+          <div className="space-y-2">
+            <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 ml-2">Account</p>
+            <div className="grid grid-cols-1 gap-2">
                {!isLoggedIn ? (
                  <>
                    <Link 
                      to="/login" 
                      onClick={() => setIsMenuOpen(false)}
-                     className="flex items-center gap-4 p-5 bg-slate-50 rounded-[1.5rem] border border-gray-100 font-bold text-slate-700 active:scale-95 transition-all"
+                     className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-gray-50 font-bold text-slate-700 active:scale-95 transition-all"
                    >
-                      <User size={22} className="text-slate-400" />
-                      <span className="text-lg">Login</span>
+                      <User size={18} className="text-slate-400" />
+                      <span className="text-sm">Sign In</span>
                    </Link>
                    <Link 
                      to="/register" 
                      onClick={() => setIsMenuOpen(false)}
-                     className="flex items-center gap-4 p-5 bg-primary text-white rounded-[1.5rem] shadow-lg shadow-primary/20 font-bold active:scale-95 transition-all"
+                     className="flex items-center gap-3 p-3 bg-primary text-white rounded-xl shadow-md shadow-primary/10 font-bold active:scale-95 transition-all"
                    >
-                      <Plus size={22} />
-                      <span className="text-lg">Join the Community</span>
+                      <Plus size={18} />
+                      <span className="text-sm">Join the Community</span>
                    </Link>
                  </>
                ) : (
@@ -117,30 +132,37 @@ export default function Navbar() {
                    <Link 
                      to="/dashboard" 
                      onClick={() => setIsMenuOpen(false)}
-                     className="flex items-center gap-4 p-5 bg-slate-50 rounded-[1.5rem] border border-gray-100 font-bold text-slate-700 active:scale-95 transition-all"
+                     className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-gray-50 font-bold text-slate-700 active:scale-95 transition-all"
                    >
-                      <LayoutDashboard size={22} className="text-primary" />
-                      <span className="text-lg">Dashboard</span>
+                      <LayoutDashboard size={18} className="text-primary" />
+                      <span className="text-sm">My Dashboard</span>
                    </Link>
                    <Link 
                      to="/dashboard/wallet" 
                      onClick={() => setIsMenuOpen(false)}
-                     className="flex items-center gap-4 p-5 bg-slate-50 rounded-[1.5rem] border border-gray-100 font-bold text-slate-700 active:scale-95 transition-all"
+                     className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-gray-50 font-bold text-slate-700 active:scale-95 transition-all"
                    >
-                      <PlusCircle size={22} className="text-emerald-500" />
-                      <span className="text-lg">Wallet / Deposit</span>
+                      <PlusCircle size={18} className="text-emerald-500" />
+                      <span className="text-sm">Wallet & Deposits</span>
                    </Link>
                  </>
                )}
-               <Link 
-                 to="/dashboard/post-ad" 
-                 onClick={() => setIsMenuOpen(false)}
-                 className="flex items-center gap-4 p-6 bg-slate-900 text-white rounded-[2rem] shadow-xl font-bold mt-4 active:scale-95 transition-all"
-               >
-                  <PlusCircle size={24} />
-                  <span className="text-xl">Post New Ad</span>
-               </Link>
             </div>
+          </div>
+
+          <div className="pt-2">
+            <Link 
+              to="/dashboard/post-ad" 
+              onClick={() => setIsMenuOpen(false)}
+              className="flex items-center justify-center gap-2 p-4 bg-slate-900 text-white rounded-2xl shadow-lg font-bold active:scale-95 transition-all w-full"
+            >
+               <PlusCircle size={20} />
+               <span className="text-base">Post Your Ad Now</span>
+            </Link>
+          </div>
+          
+          <div className="pt-4 text-center">
+             <p className="text-slate-300 text-[9px] font-bold uppercase tracking-tighter">Premium Classifieds Platform</p>
           </div>
         </div>
       </div>
