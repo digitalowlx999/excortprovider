@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Shield, Mail, Lock, User, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Shield, Mail, Lock, User, ArrowRight, CheckCircle2, PlusCircle } from 'lucide-react';
 import { api } from '../lib/api';
 
 export default function Register() {
