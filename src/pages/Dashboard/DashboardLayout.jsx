@@ -15,7 +15,14 @@ export default function DashboardLayout() {
     if (!token || !storedUser) {
       navigate('/login');
     } else {
-      const parsedUser = JSON.parse(storedUser);
+      let parsedUser = {};
+      try {
+        parsedUser = JSON.parse(storedUser);
+      } catch (e) {
+        console.error("Failed to parse stored user:", e);
+        navigate('/login');
+        return;
+      }
       setUser(parsedUser);
       // Fetch fresh profile for balance
       fetchProfile(token, parsedUser);
