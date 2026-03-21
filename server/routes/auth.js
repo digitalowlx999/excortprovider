@@ -11,7 +11,14 @@ const router = express.Router();
 
 // Register
 router.post('/register', async (req, res) => {
-  const { email, password, alias, role } = req.body;
+  let { email, password, alias, role } = req.body;
+  
+  // Security: Only allow 'viewer' or 'escort' via public registration
+  // 'admin' role must be manually set in database for security
+  if (role === 'admin') {
+    role = 'escort'; 
+  }
+  
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const [result] = await pool.execute(

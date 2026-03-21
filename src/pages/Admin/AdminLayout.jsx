@@ -23,6 +23,7 @@ export default function AdminLayout() {
 
   const menuItems = [
     { title: 'Overview', icon: LayoutDashboard, path: '/admin' },
+    { title: 'Create Ad', icon: PlusCircle, path: '/dashboard/post-ad' },
     { title: 'Users', icon: Users, path: '/admin/users' },
     { title: 'Regions', icon: MapPin, path: '/admin/regions' },
     { title: 'Ads', icon: Megaphone, path: '/admin/ads' },

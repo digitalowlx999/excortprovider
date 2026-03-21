@@ -90,16 +90,20 @@ router.post('/', upload.array('photos', 4), async (req, res) => {
     // Store as JSON string or single string (if only 1)
     const storedPhotoUrl = JSON.stringify(photoUrls);
 
-    // Check balance (minimum $10)
-    const [users] = await pool.execute('SELECT wallet_balance FROM users WHERE id = ?', [decoded.id]);
-    if (users[0].wallet_balance < 10) return res.status(400).json({ error: 'Insufficient balance' });
+    // Check balance (minimum $10) - Skip for Admin
+    if (decoded.role !== 'admin') {
+      const [users] = await pool.execute('SELECT wallet_balance FROM users WHERE id = ?', [decoded.id]);
+      if (users[0].wallet_balance < 10) return res.status(400).json({ error: 'Insufficient balance' });
+    }
 
     await pool.execute(
       'INSERT INTO ads (user_id, title, description, age, city_id, photo_url) VALUES (?, ?, ?, ?, ?, ?)',
       [decoded.id, title, description, age, city_id, storedPhotoUrl]
     );
 
-    await pool.execute('UPDATE users SET wallet_balance = wallet_balance - 10 WHERE id = ?', [decoded.id]);
+    if (decoded.role !== 'admin') {
+      await pool.execute('UPDATE users SET wallet_balance = wallet_balance - 10 WHERE id = ?', [decoded.id]);
+    }
 
     res.status(201).json({ message: 'Ad posted successfully' });
   } catch (err) {

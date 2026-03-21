@@ -4,6 +4,7 @@ import { Menu, X, User, PlusCircle, LayoutDashboard, Home as HomeIcon, MapPin, P
 
 export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -18,7 +19,9 @@ export default function Navbar() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
     setIsLoggedIn(!!token);
+    setUserRole(user.role);
     setIsMenuOpen(false); // Close menu on route change
   }, [location]);
 
@@ -57,10 +60,12 @@ export default function Navbar() {
               </div>
             )}
 
-            <Link to="/dashboard/post-ad" className="btn-secondary flex items-center gap-2 py-2 px-5">
-              <PlusCircle size={18} />
-              Post Ad
-            </Link>
+            {userRole !== 'viewer' && (
+              <Link to="/dashboard/post-ad" className="btn-secondary flex items-center gap-2 py-2 px-5">
+                <PlusCircle size={18} />
+                Post Ad
+              </Link>
+            )}
           </div>
 
           <div className="md:hidden">
@@ -166,16 +171,18 @@ export default function Navbar() {
             </div>
           </div>
 
-          <div className="pt-2">
-            <Link 
-              to="/dashboard/post-ad" 
-              onClick={() => setIsMenuOpen(false)}
-              className="flex items-center justify-center gap-2 p-4 bg-slate-900 text-white rounded-2xl shadow-lg font-bold active:scale-95 transition-all w-full"
-            >
-               <PlusCircle size={20} />
-               <span className="text-base">Post Your Ad Now</span>
-            </Link>
-          </div>
+          {userRole !== 'viewer' && (
+            <div className="pt-2">
+              <Link 
+                to="/dashboard/post-ad" 
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center justify-center gap-2 p-4 bg-slate-900 text-white rounded-2xl shadow-lg font-bold active:scale-95 transition-all w-full"
+              >
+                 <PlusCircle size={20} />
+                 <span className="text-base">Post Your Ad Now</span>
+              </Link>
+            </div>
+          )}
           
           <div className="pt-4 text-center">
              <p className="text-slate-300 text-[9px] font-bold uppercase tracking-tighter">Premium Classifieds Platform</p>

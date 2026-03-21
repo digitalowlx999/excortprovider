@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     alias VARCHAR(100),
-    role ENUM('user', 'escort', 'admin') DEFAULT 'escort',
+    role ENUM('user', 'escort', 'admin', 'viewer') DEFAULT 'escort',
     wallet_balance DECIMAL(10, 2) DEFAULT 0.00,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -7,6 +7,7 @@ export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [alias, setAlias] = useState('');
+  const [role, setRole] = useState('viewer'); // Default to viewer
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export default function Register() {
         email,
         password,
         alias,
-        role: 'escort'
+        role
       });
 
       if (data.token) {
@@ -77,6 +78,27 @@ export default function Register() {
                    )}
 
                    <form onSubmit={handleRegister} className="space-y-6">
+                      <div className="grid grid-cols-2 gap-4 mb-8">
+                         <button 
+                           type="button"
+                           onClick={() => setRole('viewer')}
+                           className={`p-4 rounded-2xl border-2 transition-all text-left ${role === 'viewer' ? 'border-primary bg-primary/5 text-primary' : 'border-gray-50 bg-slate-50 text-slate-400 hover:border-gray-200'}`}
+                         >
+                            <User size={24} className="mb-2" />
+                            <p className="font-bold text-sm">Visitor</p>
+                            <p className="text-[10px] opacity-70">I want to browse ads</p>
+                         </button>
+                         <button 
+                           type="button"
+                           onClick={() => setRole('escort')}
+                           className={`p-4 rounded-2xl border-2 transition-all text-left ${role === 'escort' ? 'border-primary bg-primary/5 text-primary' : 'border-gray-50 bg-slate-50 text-slate-400 hover:border-gray-200'}`}
+                         >
+                            <PlusCircle size={24} className="mb-2" />
+                            <p className="font-bold text-sm">Provider</p>
+                            <p className="text-[10px] opacity-70">I want to post ads</p>
+                         </button>
+                      </div>
+
                       <div>
                          <label className="block text-slate-700 font-bold mb-2 ml-1">Display Name / Alias</label>
                          <div className="relative">

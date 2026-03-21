@@ -42,7 +42,7 @@ export default function DashboardLayout() {
 
   const menuItems = [
     { title: 'Overview', icon: LayoutDashboard, path: '/dashboard' },
-    { title: 'My Ads', icon: Megaphone, path: '/dashboard/ads' },
+    ...(user?.role !== 'viewer' ? [{ title: 'My Ads', icon: Megaphone, path: '/dashboard/ads' }] : []),
     { title: 'Wallet', icon: Wallet, path: '/dashboard/wallet' },
     { title: 'Settings', icon: Settings, path: '/dashboard/settings' },
   ];
@@ -131,10 +131,12 @@ export default function DashboardLayout() {
                   <Bell size={20} />
                   <span className="absolute top-3 right-3 w-2 h-2 bg-primary rounded-full ring-4 ring-white"></span>
                </button>
-               <Link to="/dashboard/post-ad" className="btn-primary !py-3 !px-6 text-sm flex items-center gap-2">
-                  <PlusCircle size={18} />
-                  Post New Ad
-               </Link>
+               {user?.role !== 'viewer' && (
+                 <Link to="/dashboard/post-ad" className="btn-primary !py-3 !px-6 text-sm flex items-center gap-2">
+                    <PlusCircle size={18} />
+                    Post New Ad
+                 </Link>
+               )}
             </div>
          </header>
 
