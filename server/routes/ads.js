@@ -22,11 +22,16 @@ router.get('/', async (req, res) => {
     }
   }
 
-  const { sort } = req.query;
+  const { sort, limit } = req.query;
   if (sort === 'random') {
     query += ' ORDER BY RAND()';
   } else {
     query += ' ORDER BY a.created_at DESC';
+  }
+
+  if (limit) {
+    query += ' LIMIT ?';
+    params.push(parseInt(limit));
   }
 
   try {

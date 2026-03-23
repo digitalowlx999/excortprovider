@@ -16,8 +16,8 @@ export default function Home() {
   useEffect(() => {
     async function fetchFeatured() {
       try {
-        const data = await api.get('/ads?featured=true&sort=random');
-        setFeaturedAds(data.slice(0, 12));
+        const data = await api.get('/ads?featured=true&sort=random&limit=12');
+        setFeaturedAds(data);
       } catch (err) {
         console.error("Failed to fetch ads", err);
       } finally {
