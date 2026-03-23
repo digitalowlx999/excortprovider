@@ -69,3 +69,14 @@ CREATE TABLE IF NOT EXISTS settings (
 INSERT INTO settings (key_name, key_value) VALUES 
 ('wallet_address', 'your_wallet_address_here'),
 ('qr_code_url', '');
+
+-- Password Resets Table
+CREATE TABLE IF NOT EXISTS password_resets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX (email),
+    INDEX (token)
+);

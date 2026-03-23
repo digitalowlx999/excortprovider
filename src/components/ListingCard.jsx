@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { MapPin, Heart, Star, ShieldCheck } from 'lucide-react';
+import { MapPin, Heart, Star, ShieldCheck, Clock } from 'lucide-react';
 import { BASE_URL } from '../lib/api';
 
 export default function ListingCard({ ad }) {
