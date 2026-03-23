@@ -22,7 +22,12 @@ router.get('/', async (req, res) => {
     }
   }
 
-  query += ' ORDER BY a.created_at DESC';
+  const { sort } = req.query;
+  if (sort === 'random') {
+    query += ' ORDER BY RAND()';
+  } else {
+    query += ' ORDER BY a.created_at DESC';
+  }
 
   try {
     const [ads] = await pool.execute(query, params);

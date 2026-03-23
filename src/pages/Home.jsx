@@ -16,8 +16,8 @@ export default function Home() {
   useEffect(() => {
     async function fetchFeatured() {
       try {
-        const data = await api.get('/ads?featured=true');
-        setFeaturedAds(data.slice(0, 6));
+        const data = await api.get('/ads?featured=true&sort=random');
+        setFeaturedAds(data.slice(0, 12));
       } catch (err) {
         console.error("Failed to fetch ads", err);
       } finally {
@@ -138,7 +138,7 @@ export default function Home() {
           <Link to="/cities" className="text-primary font-bold hover:underline mb-2">View all cities →</Link>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
           {loadingAds ? (
             <div className="col-span-full py-20 text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mx-auto mb-4"></div>
