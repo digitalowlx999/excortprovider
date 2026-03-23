@@ -10,6 +10,8 @@ export default function AdminDashboard() {
     liveAds: 0,
     pendingDeposits: 0
   });
+  const [seeding, setSeeding] = useState(false);
+  const [seedMessage, setSeedMessage] = useState(null);
 
   useEffect(() => {
     fetchStats();
@@ -43,6 +45,23 @@ export default function AdminDashboard() {
     }
   }
 
+  async function handleSeed() {
+    if (!window.confirm("Are you sure you want to seed 90 dummy ads? This may take a few seconds.")) return;
+    
+    setSeeding(true);
+    setSeedMessage(null);
+    const token = localStorage.getItem('token');
+    try {
+      const data = await api.get('/seed-dummy', token);
+      setSeedMessage({ type: 'success', text: data.message });
+      fetchStats(); // Refresh stats after seeding
+    } catch (err) {
+      setSeedMessage({ type: 'error', text: err.message });
+    } finally {
+      setSeeding(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-[400px] flex flex-col items-center justify-center">
@@ -65,6 +84,21 @@ export default function AdminDashboard() {
         <div>
           <h1 className="text-4xl font-black text-slate-900 mb-2">Platform Overview</h1>
           <p className="text-slate-500 font-medium">Real-time performance and system health.</p>
+        </div>
+        <div className="flex flex-col items-end gap-2">
+           {seedMessage && (
+             <div className={`px-4 py-2 rounded-xl text-xs font-bold ${seedMessage.type === 'success' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
+                {seedMessage.text}
+             </div>
+           )}
+           <button 
+             onClick={handleSeed}
+             disabled={seeding}
+             className="btn-primary flex items-center gap-2 !py-3 shadow-xl shadow-primary/20"
+           >
+              {seeding ? <Loader2 className="animate-spin" size={18} /> : <TrendingUp size={18} />}
+              {seeding ? 'Seeding Platform...' : 'Seed Dummy Ads (90 Profiles)'}
+           </button>
         </div>
       </div>
 
