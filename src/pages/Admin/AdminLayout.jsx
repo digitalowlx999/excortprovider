@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Users, Megaphone, CheckSquare, Settings, LogOut, ShieldCheck, Bell, Menu, MapPin } from 'lucide-react';
+import { LayoutDashboard, Users, Megaphone, CheckSquare, Settings, LogOut, ShieldCheck, Bell, Menu, MapPin, PlusCircle } from 'lucide-react';
 
 export default function AdminLayout() {
    const [sidebarOpen, setSidebarOpen] = useState(false);

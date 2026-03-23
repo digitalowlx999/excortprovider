@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Shield, Mail, Lock, User, ArrowRight, CheckCircle2, PlusCircle } from 'lucide-react';
 import { api } from '../lib/api';
@@ -11,6 +11,14 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      navigate(user.role === 'admin' ? '/admin' : '/dashboard');
+    }
+  }, [navigate]);
 
   const handleRegister = async (e) => {
     e.preventDefault();
