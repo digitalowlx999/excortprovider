@@ -6,6 +6,7 @@ import adRoutes from './routes/ads.js';
 import locationRoutes from './routes/locations.js';
 import adminRoutes from './routes/admin.js';
 import depositRoutes from './routes/deposits.js';
+import seedRoutes from './routes/seed.js';
 
 import fs from 'fs';
 
@@ -29,6 +30,7 @@ app.use('/api/ads', adRoutes);
 app.use('/api/locations', locationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/deposits', depositRoutes);
+app.use('/api/seed-dummy', seedRoutes);
 
 app.get('/', (req, res) => {
   res.send('EscortProvider API is running...');

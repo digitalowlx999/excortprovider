@@ -34,7 +34,7 @@ function generateDescription(name, telegram, phone) {
   return templates[Math.floor(Math.random() * templates.length)];
 }
 
-async function seed() {
+export async function runSeed() {
   try {
     const passwordHash = await bcrypt.hash('dummy123', 10);
     
@@ -42,7 +42,7 @@ async function seed() {
     const [cities] = await pool.query('SELECT id, name FROM cities');
     if (cities.length === 0) {
       console.error('No cities found in DB. Please seed locations first.');
-      process.exit(1);
+      throw new Error('No cities found in DB');
     }
 
     console.log(`Found ${cities.length} cities to distribute ads.`);
@@ -93,9 +93,8 @@ async function seed() {
     console.log(`--- SEEDING COMPLETED: Created ${adCount} diverse featured profiles! ---`);
   } catch (err) {
     console.error('Seeding error:', err);
-  } finally {
-    process.exit(0);
+    throw err;
   }
 }
 
-seed();
+// seed(); // Commented out to prevent auto-run on import
