@@ -62,7 +62,7 @@ async function seed() {
         const city = cities[adCount % cities.length];
         const photoUrl = categoryImages[i];
         const description = generateDescription(name, telegram, phone);
-        const title = `🔥 100% LEGIT ${name.toUpperCase()} - ${category.replace('_', ' ').toUpperCase()} 🔥`;
+        const title = name;
         const age = 20 + Math.floor(Math.random() * 10);
 
         // 1. Create User
