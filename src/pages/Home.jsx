@@ -17,7 +17,7 @@ export default function Home() {
     async function fetchFeatured() {
       try {
         const data = await api.get('/ads?featured=true');
-        setFeaturedAds(data.slice(0, 3));
+        setFeaturedAds(data.slice(0, 6));
       } catch (err) {
         console.error("Failed to fetch ads", err);
       } finally {

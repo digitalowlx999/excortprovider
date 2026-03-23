@@ -30,7 +30,14 @@ export default function CityListing() {
           setCityData({ name: cityName, state: stateCode });
         }
         
-        setAds(data || []);
+        // Sort featured ads to the top
+        const sortedAds = (data || []).sort((a, b) => {
+          if (a.is_featured && !b.is_featured) return -1;
+          if (!a.is_featured && b.is_featured) return 1;
+          return 0;
+        });
+        
+        setAds(sortedAds);
 
       } catch (err) {
         setError(err.message);
