@@ -10,8 +10,6 @@ export default function AdminDashboard() {
     liveAds: 0,
     pendingDeposits: 0
   });
-  const [seeding, setSeeding] = useState(false);
-  const [seedMessage, setSeedMessage] = useState(null);
 
   useEffect(() => {
     fetchStats();
@@ -24,7 +22,7 @@ export default function AdminDashboard() {
       const users = await api.get('/admin/users', token);
       const ads = await api.get('/ads');
       const deposits = await api.get('/deposits', token);
-      
+
       const escortCount = Array.isArray(users) ? users.filter(u => u.role === 'escort').length : 0;
       const adCount = Array.isArray(ads) ? ads.length : 0;
       const pendingCount = Array.isArray(deposits) ? deposits.filter(d => d.status === 'pending').length : 0;
@@ -42,23 +40,6 @@ export default function AdminDashboard() {
       console.error(err);
     } finally {
       setLoading(false);
-    }
-  }
-
-  async function handleSeed() {
-    if (!window.confirm("Are you sure you want to seed 90 dummy ads? This may take a few seconds.")) return;
-    
-    setSeeding(true);
-    setSeedMessage(null);
-    const token = localStorage.getItem('token');
-    try {
-      const data = await api.get('/seed-dummy', token);
-      setSeedMessage({ type: 'success', text: data.message });
-      fetchStats(); // Refresh stats after seeding
-    } catch (err) {
-      setSeedMessage({ type: 'error', text: err.message });
-    } finally {
-      setSeeding(false);
     }
   }
 
@@ -85,84 +66,69 @@ export default function AdminDashboard() {
           <h1 className="text-4xl font-black text-slate-900 mb-2">Platform Overview</h1>
           <p className="text-slate-500 font-medium">Real-time performance and system health.</p>
         </div>
-        <div className="flex flex-col items-end gap-2">
-           {seedMessage && (
-             <div className={`px-4 py-2 rounded-xl text-xs font-bold ${seedMessage.type === 'success' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
-                {seedMessage.text}
-             </div>
-           )}
-           <button 
-             onClick={handleSeed}
-             disabled={seeding}
-             className="btn-primary flex items-center gap-2 !py-3 shadow-xl shadow-primary/20"
-           >
-              {seeding ? <Loader2 className="animate-spin" size={18} /> : <TrendingUp size={18} />}
-              {seeding ? 'Seeding Platform...' : 'Seed Dummy Ads (90 Profiles)'}
-           </button>
-        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {stats.map((stat, idx) => (
           <div key={idx} className="card-premium p-8 bg-white border border-gray-100">
-             <div className="flex justify-between items-start mb-6">
-                <div className={`${stat.bg} ${stat.color} p-4 rounded-2xl`}>
-                   <stat.icon size={24} />
-                </div>
-                <div className={`flex items-center gap-1 text-xs font-bold ${stat.up ? 'text-emerald-500' : 'text-slate-400'}`}>
-                   {stat.change} {stat.up && <ArrowUpRight size={14} />}
-                </div>
-             </div>
-             <div>
-                <p className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">{stat.title}</p>
-                <p className="text-3xl font-black text-slate-900">{stat.val}</p>
-             </div>
+            <div className="flex justify-between items-start mb-6">
+              <div className={`${stat.bg} ${stat.color} p-4 rounded-2xl`}>
+                <stat.icon size={24} />
+              </div>
+              <div className={`flex items-center gap-1 text-xs font-bold ${stat.up ? 'text-emerald-500' : 'text-slate-400'}`}>
+                {stat.change} {stat.up && <ArrowUpRight size={14} />}
+              </div>
+            </div>
+            <div>
+              <p className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">{stat.title}</p>
+              <p className="text-3xl font-black text-slate-900">{stat.val}</p>
+            </div>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-         <div className="lg:col-span-8">
-            <div className="card-premium p-10 bg-white h-full relative overflow-hidden">
-               <h3 className="text-xl font-bold text-slate-800 mb-10 flex items-center gap-2">
-                  <TrendingUp size={20} className="text-primary" />
-                  Performance Baseline
-               </h3>
-               
-               <div className="h-64 mt-12 flex items-end justify-between gap-4">
-                  {[40, 65, 45, 90, 85, 55, 100, 80, 70, 95, 85, 110].map((h, i) => (
-                    <div key={i} className="flex-grow flex flex-col items-center gap-4">
-                       <div className="w-full bg-slate-100 rounded-t-xl relative group">
-                          <div 
-                            className="bg-primary/20 rounded-t-xl transition-all duration-1000 ease-out" 
-                            style={{ height: `${h}%` }}
-                          ></div>
-                       </div>
-                    </div>
-                  ))}
-               </div>
-               <p className="text-center text-slate-300 text-[10px] font-black uppercase tracking-[0.2em] mt-8">System Analytics Initializing...</p>
-            </div>
-         </div>
+        <div className="lg:col-span-8">
+          <div className="card-premium p-10 bg-white h-full relative overflow-hidden">
+            <h3 className="text-xl font-bold text-slate-800 mb-10 flex items-center gap-2">
+              <TrendingUp size={20} className="text-primary" />
+              Performance Baseline
+            </h3>
 
-         <div className="lg:col-span-4 flex flex-col gap-8 text-center pt-10">
-            <h4 className="text-xl font-bold text-slate-900">Reach Distribution</h4>
-            <div className="relative w-48 h-48 mx-auto">
-               <div className="absolute inset-0 rounded-full border-[1.5rem] border-primary/20"></div>
-               <div className="absolute inset-0 rounded-full border-[1.5rem] border-primary border-r-transparent border-b-transparent border-l-transparent rotate-45"></div>
-               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-2xl font-black text-slate-900">{data.activeEscorts}</span>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase">Total Escorts</span>
-               </div>
+            <div className="h-64 mt-12 flex items-end justify-between gap-4">
+              {[40, 65, 45, 90, 85, 55, 100, 80, 70, 95, 85, 110].map((h, i) => (
+                <div key={i} className="flex-grow flex flex-col items-center gap-4">
+                  <div className="w-full bg-slate-100 rounded-t-xl relative group">
+                    <div
+                      className="bg-primary/20 rounded-t-xl transition-all duration-1000 ease-out"
+                      style={{ height: `${h}%` }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
             </div>
-            
-            <div className="space-y-4 text-left">
-               <div className="bg-slate-50 p-6 rounded-3xl border border-gray-100">
-                  <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-2">Live Listings</p>
-                  <p className="text-2xl font-black text-slate-900">{data.liveAds}</p>
-               </div>
+            <p className="text-center text-slate-300 text-[10px] font-black uppercase tracking-[0.2em] mt-8">System Analytics Initializing...</p>
+          </div>
+        </div>
+
+        <div className="lg:col-span-4 flex flex-col gap-8 text-center pt-10">
+          <h4 className="text-xl font-bold text-slate-900">Reach Distribution</h4>
+          <div className="relative w-48 h-48 mx-auto">
+            <div className="absolute inset-0 rounded-full border-[1.5rem] border-primary/20"></div>
+            <div className="absolute inset-0 rounded-full border-[1.5rem] border-primary border-r-transparent border-b-transparent border-l-transparent rotate-45"></div>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-2xl font-black text-slate-900">{data.activeEscorts}</span>
+              <span className="text-[10px] font-bold text-slate-400 uppercase">Total Escorts</span>
             </div>
-         </div>
+          </div>
+
+          <div className="space-y-4 text-left">
+            <div className="bg-slate-50 p-6 rounded-3xl border border-gray-100">
+              <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-2">Live Listings</p>
+              <p className="text-2xl font-black text-slate-900">{data.liveAds}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
