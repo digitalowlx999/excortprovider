@@ -1,15 +1,35 @@
 import { useState, useEffect } from 'react';
-import { Users, Megaphone, DollarSign, Wallet, ArrowUpRight, ArrowDownRight, TrendingUp, Loader2 } from 'lucide-react';
+import { Users, Megaphone, DollarSign, Wallet, ArrowUpRight, TrendingUp, Loader2, RefreshCw, Database, MapPin } from 'lucide-react';
 import { api } from '../../lib/api';
 
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
+  const [seedStatus, setSeedStatus] = useState(null);
+  const [seedLoading, setSeedLoading] = useState(false);
   const [data, setData] = useState({
     totalRevenue: 0,
     activeEscorts: 0,
     liveAds: 0,
     pendingDeposits: 0
   });
+
+  async function runAdminAction(endpoint, label) {
+    setSeedLoading(true);
+    setSeedStatus(`Running ${label}...`);
+    const token = localStorage.getItem('token');
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/seed-dummy/${endpoint}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const json = await res.json();
+      setSeedStatus(json.message || JSON.stringify(json));
+      fetchStats();
+    } catch (err) {
+      setSeedStatus('Error: ' + err.message);
+    } finally {
+      setSeedLoading(false);
+    }
+  }
 
   useEffect(() => {
     fetchStats();
@@ -66,6 +86,41 @@ export default function AdminDashboard() {
           <h1 className="text-4xl font-black text-slate-900 mb-2">Platform Overview</h1>
           <p className="text-slate-500 font-medium">Real-time performance and system health.</p>
         </div>
+      </div>
+
+      {/* Database Actions Panel */}
+      <div className="bg-white border border-gray-100 rounded-[2rem] p-8">
+        <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+          <Database size={18} className="text-primary" />
+          Database Actions
+        </h3>
+        <div className="flex flex-wrap gap-4">
+          <button
+            onClick={() => runAdminAction('', 'Seed Dummy Ads')}
+            disabled={seedLoading}
+            className="flex items-center gap-2 bg-primary text-white font-bold px-6 py-3 rounded-2xl hover:opacity-90 transition disabled:opacity-50"
+          >
+            {seedLoading ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
+            Re-seed Dummy Ads
+          </button>
+          <button
+            onClick={() => runAdminAction('locations', 'Populate Locations')}
+            disabled={seedLoading}
+            className="flex items-center gap-2 bg-slate-800 text-white font-bold px-6 py-3 rounded-2xl hover:opacity-90 transition disabled:opacity-50"
+          >
+            {seedLoading ? <Loader2 size={16} className="animate-spin" /> : <MapPin size={16} />}
+            Populate Locations
+          </button>
+        </div>
+        {seedStatus && (
+          <p className={`mt-4 text-sm font-semibold px-4 py-2 rounded-xl inline-block ${
+            seedStatus.includes('success') || seedStatus.includes('completed') 
+              ? 'bg-emerald-50 text-emerald-600' 
+              : seedStatus.includes('Error') 
+                ? 'bg-red-50 text-red-600' 
+                : 'bg-slate-50 text-slate-500'
+          }`}>{seedStatus}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
