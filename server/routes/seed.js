@@ -1,4 +1,5 @@
 import express from 'express';
+import pool from '../db.js';
 import { runSeed } from '../seed_dummy_ads.js';
 import { isAdmin } from '../middleware/auth.js';
 import { runLocationSeed } from '../utils/locationSeeder.js';
