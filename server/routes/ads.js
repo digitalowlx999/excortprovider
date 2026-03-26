@@ -7,7 +7,7 @@ const router = express.Router();
 // Get all ads (with filtering)
 router.get('/', async (req, res) => {
   const { city, featured } = req.query;
-  let query = 'SELECT a.*, c.name as city_name, c.slug as city_slug, s.name as state_name FROM ads a JOIN cities c ON a.city_id = c.id JOIN states s ON c.state_id = s.id';
+  let query = 'SELECT a.*, c.name as city_name, c.slug as city_slug, s.name as state_name FROM ads a LEFT JOIN cities c ON a.city_id = c.id LEFT JOIN states s ON c.state_id = s.id';
   const params = [];
 
   if (city || featured) {
@@ -38,7 +38,7 @@ router.get('/', async (req, res) => {
     const [ads] = await pool.execute(query, params);
     res.json(ads);
   } catch (err) {
-    console.error("Create ad error:", err);
+    console.error("Fetch ads error:", err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -48,7 +48,7 @@ router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const [rows] = await pool.execute(
-      'SELECT a.*, c.name as city_name, c.slug as city_slug, s.name as state_name, s.code as state_code FROM ads a JOIN cities c ON a.city_id = c.id JOIN states s ON c.state_id = s.id WHERE a.id = ?',
+      'SELECT a.*, c.name as city_name, c.slug as city_slug, s.name as state_name, s.code as state_code FROM ads a LEFT JOIN cities c ON a.city_id = c.id LEFT JOIN states s ON c.state_id = s.id WHERE a.id = ?',
       [id]
     );
     if (rows.length === 0) return res.status(404).json({ error: 'Ad not found' });

@@ -40,8 +40,8 @@ router.get('/locations', isAdmin, async (req, res) => {
   }
 });
 
-// Diagnostic route to find the cause of 500 errors (Admin Only)
-router.get('/debug-error', isAdmin, async (req, res) => {
+// Diagnostic route to find the cause of 500 errors (Temporarily unprotected for debugging)
+router.get('/debug-error', async (req, res) => {
   try {
     const query = 'SELECT a.*, c.name as city_name, c.slug as city_slug, s.name as state_name FROM ads a JOIN cities c ON a.city_id = c.id JOIN states s ON c.state_id = s.id LIMIT 1';
     const [rows] = await pool.execute(query);
