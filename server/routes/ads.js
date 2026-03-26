@@ -35,7 +35,7 @@ router.get('/', async (req, res) => {
   }
 
   try {
-    const [ads] = await pool.execute(query, params);
+    const [ads] = await pool.query(query, params);
     res.json(ads);
   } catch (err) {
     console.error("Fetch ads error:", err);
