@@ -64,7 +64,7 @@ export default function StateListing() {
         {filteredCities.map(city => (
           <Link 
             key={city.id} 
-            to={`/city/${city.slug}`}
+            to={`/escorts/${city.slug}`}
             className="group p-6 bg-white border border-gray-50 rounded-[2rem] hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all flex items-center justify-between"
           >
             <div className="flex items-center gap-4">
