@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Trash2, Plus, Image, Loader2, RefreshCw } from 'lucide-react';
+import { Trash2, Plus, Image, Loader2, RefreshCw, Database } from 'lucide-react';
 import { api } from '../../lib/api';
 
 const CATEGORIES = ['blonde', 'brunette', 'latina', 'asian', 'fitness', 'ebony'];
@@ -21,6 +21,7 @@ export default function AdminSeedImages() {
   const [adding, setAdding] = useState(false);
   const [status, setStatus] = useState(null);
   const [deleting, setDeleting] = useState(null);
+  const [initializing, setInitializing] = useState(false);
 
   const token = localStorage.getItem('token');
 
@@ -67,6 +68,26 @@ export default function AdminSeedImages() {
       setStatus({ type: 'error', text: 'Delete failed: ' + err.message });
     } finally {
       setDeleting(null);
+    }
+  }
+
+  async function handleInitializeDB() {
+    setInitializing(true);
+    setStatus(null);
+    try {
+      // Direct raw fetch because API root is VITE_API_URL and this route is under /api
+      const VITE_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5005/api';
+      const cleanUrl = VITE_API_URL.replace(/\/+$/, ''); // Remove trailing slashes
+      const res = await fetch(`${cleanUrl}/seed-dummy/init-seed-images-table`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to initialize database');
+      
+      setStatus({ type: 'success', text: `Success! ${data.imagesInserted} images added.` });
+      loadImages();
+    } catch (err) {
+      setStatus({ type: 'error', text: 'Initialization error: ' + err.message });
+    } finally {
+      setInitializing(false);
     }
   }
 
@@ -156,7 +177,18 @@ export default function AdminSeedImages() {
         <div className="flex flex-col items-center justify-center py-24 text-slate-300">
           <Image size={56} className="mb-4" />
           <p className="font-bold text-lg capitalize">No images in {activeTab}</p>
-          <p className="text-sm mt-1">Add one above to get started</p>
+          <p className="text-sm mt-1 mb-6">Add one above to get started</p>
+          
+          {images.length === 0 && (
+             <button
+               onClick={handleInitializeDB}
+               disabled={initializing}
+               className="flex items-center gap-2 bg-slate-800 text-white font-bold px-6 py-3 rounded-2xl hover:bg-slate-700 transition disabled:opacity-50"
+             >
+               {initializing ? <Loader2 size={16} className="animate-spin" /> : <Database size={16} />}
+               {initializing ? 'Initializing...' : 'Initialize DB with 90 Defaults'}
+             </button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
