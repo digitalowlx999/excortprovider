@@ -132,4 +132,48 @@ router.delete('/cities/:id', isAdmin, async (req, res) => {
   }
 });
 
+// --- SEED IMAGES MANAGEMENT ---
+// Get all seed images
+router.get('/seed-images', isAdmin, async (req, res) => {
+  try {
+    const [images] = await pool.query('SELECT * FROM seed_images ORDER BY category, id DESC');
+    res.json(images);
+  } catch (err) {
+    console.error("Fetch seed images error:", err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Add a new seed image
+router.post('/seed-images', isAdmin, async (req, res) => {
+  const { category, url } = req.body;
+  
+  if (!category || !url) {
+    return res.status(400).json({ error: 'Category and URL are required' });
+  }
+
+  try {
+    const [result] = await pool.query(
+      'INSERT INTO seed_images (category, url) VALUES (?, ?)',
+      [category.toLowerCase(), url]
+    );
+    res.status(201).json({ id: result.insertId, category: category.toLowerCase(), url });
+  } catch (err) {
+    console.error("Add seed image error:", err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Delete a seed image
+router.delete('/seed-images/:id', isAdmin, async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM seed_images WHERE id = ?', [id]);
+    res.json({ message: 'Image deleted successfully' });
+  } catch (err) {
+    console.error("Delete seed image error:", err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 export default router;

@@ -80,3 +80,11 @@ CREATE TABLE IF NOT EXISTS password_resets (
     INDEX (email),
     INDEX (token)
 );
+
+-- Seed Images Table (for dummy ads generation)
+CREATE TABLE IF NOT EXISTS seed_images (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    category VARCHAR(50) NOT NULL,
+    url VARCHAR(500) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
