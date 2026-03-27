@@ -18,14 +18,8 @@ export default function AdminDashboard() {
     setSeedStatus(`Running ${label}...`);
     const token = localStorage.getItem('token');
     try {
-      const url = endpoint 
-        ? `${import.meta.env.VITE_API_URL}/api/seed-dummy/${endpoint}`
-        : `${import.meta.env.VITE_API_URL}/api/seed-dummy`;
-
-      const res = await fetch(url, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const json = await res.json();
+      const path = endpoint ? `/seed-dummy/${endpoint}` : `/seed-dummy`;
+      const json = await api.get(path, token);
       setSeedStatus(json.message || JSON.stringify(json));
       fetchStats();
     } catch (err) {
