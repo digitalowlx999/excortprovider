@@ -1,6 +1,12 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 export default function Footer() {
+  const location = useLocation();
+
+  if (location.pathname.startsWith('/dashboard') || location.pathname.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <footer className="bg-white border-t border-gray-100 pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">

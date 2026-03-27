@@ -124,29 +124,29 @@ export default function DashboardLayout() {
       {/* Main Content */}
       <div className="flex-grow flex flex-col min-w-0">
          {/* Top bar */}
-         <header className="h-24 bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-30 px-8 flex items-center justify-between">
-            <div className="flex items-center gap-4">
+         <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-30 px-4 sm:px-8 flex items-center justify-between">
+            <div className="flex items-center gap-3">
                <button className="lg:hidden p-2 bg-slate-50 rounded-xl" onClick={() => setSidebarOpen(true)}>
                   <Menu size={24} />
                </button>
-               <h2 className="text-xl font-bold text-slate-800 hidden sm:block">
+               <h2 className="text-lg font-bold text-slate-800 hidden sm:block">
                   {menuItems.find(m => m.path === location.pathname)?.title || 'Dashboard'}
                </h2>
             </div>
 
-            <div className="flex items-center gap-6">
-               <div className="hidden sm:flex flex-col items-end mr-2">
+            <div className="flex items-center gap-3">
+               <div className="hidden md:flex flex-col items-end mr-1">
                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Wallet Balance</span>
                   <span className="text-primary font-black text-lg">${Number(user?.wallet_balance || 0).toFixed(2)}</span>
                </div>
-               <button className="p-3 bg-slate-50 rounded-2xl text-slate-400 hover:text-primary transition-colors relative">
-                  <Bell size={20} />
-                  <span className="absolute top-3 right-3 w-2 h-2 bg-primary rounded-full ring-4 ring-white"></span>
+               <button className="p-2.5 bg-slate-50 rounded-2xl text-slate-400 hover:text-primary transition-colors relative">
+                  <Bell size={18} />
+                  <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-primary rounded-full ring-2 ring-white"></span>
                </button>
                {user?.role !== 'viewer' && (
-                 <Link to="/dashboard/post-ad" className="btn-primary !py-3 !px-6 text-sm flex items-center gap-2">
+                 <Link to="/dashboard/post-ad" className="btn-primary flex items-center gap-2 !py-2.5 !px-4 sm:!px-6 text-sm whitespace-nowrap">
                     <PlusCircle size={18} />
-                    Post New Ad
+                    <span className="hidden sm:inline">Post New Ad</span>
                  </Link>
                )}
             </div>

@@ -30,6 +30,11 @@ export default function Navbar() {
     setIsMenuOpen(false); // Close menu on route change
   }, [location]);
 
+  // Hide the global Navbar on dashboard and admin routes, as they have their own layout headers.
+  if (location.pathname.startsWith('/dashboard') || location.pathname.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-lg z-50 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
