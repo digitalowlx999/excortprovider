@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { LayoutDashboard, Megaphone, Wallet, Settings, LogOut, Bell, Menu, PlusCircle, ShieldCheck } from 'lucide-react';
 import { api } from '../../lib/api';
@@ -8,6 +8,11 @@ export default function DashboardLayout() {
   const [user, setUser] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const mainRef = useRef(null);
+
+  useEffect(() => {
+    if (mainRef.current) mainRef.current.scrollTop = 0;
+  }, [location.pathname]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -75,8 +80,8 @@ export default function DashboardLayout() {
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 w-80 bg-white border-r border-gray-100 z-50 transform transition-transform duration-300 lg:relative lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-         <div className="p-8">
+      <aside className={`fixed inset-y-0 left-0 w-80 bg-white border-r border-gray-100 z-50 transform transition-transform duration-300 flex flex-col lg:relative lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+         <div className="flex-1 overflow-y-auto p-8 no-scrollbar">
             <Link to="/" className="text-2xl font-black text-primary tracking-tighter block mb-12">
                Escort<span className="text-slate-900">Provider</span>
             </Link>
@@ -96,7 +101,7 @@ export default function DashboardLayout() {
             </nav>
          </div>
 
-         <div className="absolute bottom-4 left-4 right-4 p-8 border-t border-gray-50 bg-slate-50 rounded-[2rem]">
+         <div className="mt-auto p-8 border-t border-gray-50 bg-slate-50">
             <div className="flex items-center gap-4 mb-6">
                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-bold">
                   {(user.alias || user.email)?.[0]?.toUpperCase()}
@@ -148,7 +153,7 @@ export default function DashboardLayout() {
          </header>
 
          {/* View content */}
-         <main className="p-8 lg:p-12 overflow-y-auto bg-slate-50/50 flex-grow">
+         <main ref={mainRef} className="p-4 md:p-8 lg:p-12 overflow-y-auto bg-slate-50/50 flex-grow">
             <div className="max-w-6xl">
                <Outlet />
             </div>

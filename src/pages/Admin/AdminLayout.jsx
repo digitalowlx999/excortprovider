@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { LayoutDashboard, Users, Megaphone, CheckSquare, Settings, LogOut, ShieldCheck, Bell, Menu, MapPin, PlusCircle, Images } from 'lucide-react';
 
@@ -6,6 +6,11 @@ export default function AdminLayout() {
    const [sidebarOpen, setSidebarOpen] = useState(false);
    const location = useLocation();
    const navigate = useNavigate();
+   const mainRef = useRef(null);
+
+   useEffect(() => {
+      if (mainRef.current) mainRef.current.scrollTop = 0;
+   }, [location.pathname]);
 
    const handleLogout = () => {
       localStorage.removeItem('token');
@@ -43,8 +48,8 @@ export default function AdminLayout() {
          )}
 
          {/* Sidebar */}
-         <aside className={`fixed inset-y-0 left-0 w-72 bg-slate-900 border-r border-slate-800 z-50 transform transition-transform duration-300 lg:relative lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-            <div className="p-8">
+         <aside className={`fixed inset-y-0 left-0 w-72 bg-slate-900 border-r border-slate-800 z-50 transform transition-transform duration-300 flex flex-col lg:relative lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+            <div className="flex-1 overflow-y-auto p-8 no-scrollbar">
                <Link to="/" className="text-2xl font-black text-primary tracking-tighter block mb-12">
                   Admin<span className="text-white">Panel</span>
                </Link>
@@ -64,7 +69,7 @@ export default function AdminLayout() {
                </nav>
             </div>
 
-            <div className="absolute bottom-8 left-8 right-8">
+            <div className="p-8 pt-0 mt-auto">
                <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 bg-slate-800 py-4 rounded-2xl font-bold text-slate-400 hover:text-white transition-all text-sm">
                   <LogOut size={18} />
                   Sign Out
@@ -100,7 +105,7 @@ export default function AdminLayout() {
             </header>
 
             {/* View content */}
-            <main className="p-8 lg:p-12 overflow-y-auto flex-grow">
+            <main ref={mainRef} className="p-4 md:p-8 lg:p-12 overflow-y-auto flex-grow">
                <div className="max-w-6xl">
                   <Outlet />
                </div>
