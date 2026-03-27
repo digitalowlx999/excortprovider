@@ -144,9 +144,9 @@ export default function DashboardLayout() {
                   <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-primary rounded-full ring-2 ring-white"></span>
                </button>
                {user?.role !== 'viewer' && (
-                 <Link to="/dashboard/post-ad" className="btn-primary flex items-center gap-2 !py-2.5 !px-4 sm:!px-6 text-sm whitespace-nowrap">
+                 <Link to="/dashboard/post-ad" className="btn-primary flex items-center gap-2 !py-2.5 !px-4 text-sm whitespace-nowrap">
                     <PlusCircle size={18} />
-                    <span className="hidden sm:inline">Post New Ad</span>
+                    Post New Ad
                  </Link>
                )}
             </div>
