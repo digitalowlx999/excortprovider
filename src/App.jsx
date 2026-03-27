@@ -22,6 +22,7 @@ import AdminSettings from './pages/Admin/AdminSettings';
 import ManageCities from './pages/Admin/ManageCities';
 import UserManagement from './pages/Admin/UserManagement';
 import AdManagement from './pages/Admin/AdManagement';
+import AdminSeedImages from './pages/Admin/AdminSeedImages';
 import UserSettings from './pages/Dashboard/Settings';
 const Placeholder = ({ title }) => <div className="min-h-screen pt-24 px-4 max-w-7xl mx-auto"><h1 className="text-4xl font-bold">{title}</h1><p className="mt-4 text-gray-600">This page is under construction.</p></div>;
 
@@ -54,6 +55,7 @@ function App() {
               <Route path="regions" element={<ManageCities />} />
               <Route path="ads" element={<AdManagement />} />
               <Route path="deposits" element={<DepositManagement />} />
+              <Route path="seed-images" element={<AdminSeedImages />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
           </Routes>

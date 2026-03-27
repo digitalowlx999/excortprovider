@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Users, Megaphone, CheckSquare, Settings, LogOut, ShieldCheck, Bell, Menu, MapPin, PlusCircle } from 'lucide-react';
+import { LayoutDashboard, Users, Megaphone, CheckSquare, Settings, LogOut, ShieldCheck, Bell, Menu, MapPin, PlusCircle, Images } from 'lucide-react';
 
 export default function AdminLayout() {
    const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -28,6 +28,7 @@ export default function AdminLayout() {
       { title: 'Regions', icon: MapPin, path: '/admin/regions' },
       { title: 'Ads', icon: Megaphone, path: '/admin/ads' },
       { title: 'Deposits', icon: CheckSquare, path: '/admin/deposits' },
+      { title: 'Seed Images', icon: Images, path: '/admin/seed-images' },
       { title: 'Settings', icon: Settings, path: '/admin/settings' },
    ];
 
