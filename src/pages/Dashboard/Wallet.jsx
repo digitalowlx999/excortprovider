@@ -97,10 +97,21 @@ export default function WalletView() {
                  <div className="w-20 h-20 bg-primary/10 rounded-[2rem] flex items-center justify-center text-primary">
                     <Wallet size={40} />
                  </div>
-                 <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Total Balance</p>
-                    <p className="text-5xl font-black text-slate-900">${Number(balance || 0).toFixed(2)}</p>
-                 </div>
+                  <div className="flex-grow flex justify-between items-center">
+                     <div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Total Balance</p>
+                        <p className="text-5xl font-black text-slate-900">${Number(balance || 0).toFixed(2)}</p>
+                     </div>
+                     <button 
+                        onClick={fetchWalletData}
+                        disabled={loading}
+                        className="p-4 bg-slate-50 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-2xl transition-all flex flex-col items-center gap-1 group"
+                        title="Refresh Balance"
+                     >
+                        <Loader2 className={`transition-all ${loading ? 'animate-spin text-primary' : 'group-hover:rotate-180'}`} size={20} />
+                        <span className="text-[8px] font-black uppercase">Sync</span>
+                     </button>
+                  </div>
               </div>
 
               <div className="p-8 bg-slate-50 rounded-[2.5rem] mb-10 border border-gray-100">

@@ -107,7 +107,19 @@ export default function DepositManagement() {
                     <td className="px-6 py-8">
                        <div className="flex items-center gap-2 text-slate-500 font-mono text-xs max-w-[150px] truncate">
                           {dep.transaction_hash}
-                          <button className="text-blue-500 hover:text-blue-700" onClick={() => window.open(`https://www.blockchain.com/explorer/transactions/btc/${dep.transaction_hash}`, '_blank')}><ExternalLink size={12} /></button>
+                          <button 
+                            className="text-blue-500 hover:text-blue-700 p-1.5 bg-blue-50 rounded-lg transition-colors" 
+                            title={`View on ${dep.currency} explorer`}
+                            onClick={() => {
+                              let url = `https://www.blockchain.com/explorer/transactions/btc/${dep.transaction_hash}`;
+                              if (dep.currency === 'ETH') url = `https://etherscan.io/tx/${dep.transaction_hash}`;
+                              if (dep.currency === 'USDT' || dep.currency === 'TRX') url = `https://tronscan.org/#/transaction/${dep.transaction_hash}`;
+                              if (dep.currency === 'LTC') url = `https://live.blockcypher.com/ltc/tx/${dep.transaction_hash}/`;
+                              window.open(url, '_blank');
+                            }}
+                          >
+                            <ExternalLink size={14} />
+                          </button>
                        </div>
                     </td>
                     <td className="px-6 py-8">
@@ -118,6 +130,7 @@ export default function DepositManagement() {
                           <button 
                             disabled={processing === dep.id}
                             onClick={() => handleAction(dep.id, 'reject')}
+                            title="Reject Deposit"
                             className="p-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm shadow-red-500/10 disabled:opacity-50"
                           >
                              <X size={18} />
@@ -125,6 +138,7 @@ export default function DepositManagement() {
                           <button 
                             disabled={processing === dep.id}
                             onClick={() => handleAction(dep.id, 'approve')}
+                            title="Verify and Approve Amount"
                             className="px-6 py-3 bg-emerald-500 text-white rounded-xl font-bold text-xs hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2 disabled:opacity-50"
                           >
                              {processing === dep.id ? <Loader2 className="animate-spin" size={18} /> : <Check size={18} />}

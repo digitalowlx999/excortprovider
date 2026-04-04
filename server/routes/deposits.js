@@ -54,24 +54,35 @@ router.get('/', isAdmin, async (req, res) => {
 router.put('/:id/approve', isAdmin, async (req, res) => {
   const { id } = req.params;
   const { amount } = req.body; // Admin specifies the verified USD amount
+  
+  if (amount === undefined || isNaN(parseFloat(amount))) {
+    return res.status(400).json({ error: 'Valid amount is required' });
+  }
+
   try {
     const [rows] = await pool.execute('SELECT * FROM deposits WHERE id = ?', [id]);
     if (!rows.length) return res.status(404).json({ error: 'Deposit not found' });
+    
     const deposit = rows[0];
+    if (deposit.status === 'approved') {
+      return res.status(400).json({ error: 'This deposit has already been approved' });
+    }
+
+    const creditAmount = parseFloat(amount);
 
     // Update deposit status
     await pool.execute(
       'UPDATE deposits SET status = ?, amount = ? WHERE id = ?',
-      ['approved', amount || deposit.amount, id]
+      ['approved', creditAmount, id]
     );
 
     // Credit user wallet
     await pool.execute(
       'UPDATE users SET wallet_balance = wallet_balance + ? WHERE id = ?',
-      [amount || deposit.amount, deposit.user_id]
+      [creditAmount, deposit.user_id]
     );
 
-    res.json({ message: 'Deposit approved and wallet credited' });
+    res.json({ message: `Deposit approved and $${creditAmount.toFixed(2)} credited to user wallet` });
   } catch (err) {
     console.error('Approve deposit error:', err);
     res.status(500).json({ error: 'Internal server error' });

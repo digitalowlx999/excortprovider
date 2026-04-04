@@ -29,8 +29,16 @@ export default function DashboardLayout() {
         return;
       }
       setUser(parsedUser);
-      // Fetch fresh profile for balance
+      
+      // Initial fetch
       fetchProfile(token, parsedUser);
+
+      // Set up polling for balance every 60 seconds
+      const interval = setInterval(() => {
+        fetchProfile(token, parsedUser);
+      }, 60000);
+
+      return () => clearInterval(interval);
     }
   }, [navigate]);
 
@@ -39,7 +47,10 @@ export default function DashboardLayout() {
       const profile = await api.get('/auth/profile', token);
       setUser(prev => {
         const currentUser = prev || fallbackUser;
-        return { ...currentUser, wallet_balance: profile.wallet_balance };
+        const updatedUser = { ...currentUser, wallet_balance: profile.wallet_balance };
+        // Sync back to local storage so other parts of the app have the fresh balance
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        return updatedUser;
       });
     } catch (err) {
       console.error("Failed to fetch profile:", err);
