@@ -98,6 +98,24 @@ router.delete('/users/:id', isAdmin, async (req, res) => {
   }
 });
 
+// Update User Balance (Admin Only)
+router.put('/users/:id/balance', isAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { balance } = req.body;
+  
+  if (balance === undefined || isNaN(parseFloat(balance))) {
+    return res.status(400).json({ error: 'Valid balance is required' });
+  }
+
+  try {
+    await pool.execute('UPDATE users SET wallet_balance = ? WHERE id = ?', [parseFloat(balance), id]);
+    res.json({ message: 'User balance updated successfully' });
+  } catch (err) {
+    console.error("Update user balance error:", err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Create City
 router.post('/cities', isAdmin, async (req, res) => {
   const { name, state_code } = req.body;
