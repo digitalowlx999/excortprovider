@@ -7,6 +7,11 @@ export default function DepositManagement() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [processing, setProcessing] = useState(null);
+  
+  // Modal State
+  const [showModal, setShowModal] = useState(false);
+  const [selectedDep, setSelectedDep] = useState(null);
+  const [amount, setAmount] = useState('100');
 
   useEffect(() => {
     fetchDeposits();
@@ -26,17 +31,40 @@ export default function DepositManagement() {
   }
 
   const handleAction = async (id, action) => {
+    if (action === 'approve') {
+       const dep = deposits.find(d => d.id === id);
+       setSelectedDep(dep);
+       setAmount('100');
+       setShowModal(true);
+       return;
+    }
+
+    if (!confirm('Are you sure you want to reject this deposit?')) return;
+    
     setProcessing(id);
     const token = localStorage.getItem('token');
     try {
-      if (action === 'approve') {
-        const amount = prompt('Enter the amount in USD to credit the user:', '100');
-        if (amount === null) return;
-        await api.put(`/deposits/${id}/approve`, { amount: parseFloat(amount) }, token);
-      } else {
-        if (!confirm('Are you sure you want to reject this deposit?')) return;
-        await api.put(`/deposits/${id}/reject`, {}, token);
-      }
+      await api.put(`/deposits/${id}/reject`, {}, token);
+      fetchDeposits();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setProcessing(null);
+    }
+  };
+
+  const confirmApproval = async () => {
+    if (!selectedDep || !amount || isNaN(parseFloat(amount))) {
+       alert("Please enter a valid numeric amount.");
+       return;
+    }
+
+    setProcessing(selectedDep.id);
+    const token = localStorage.getItem('token');
+    try {
+      await api.put(`/deposits/${selectedDep.id}/approve`, { amount: parseFloat(amount) }, token);
+      setShowModal(false);
+      setSelectedDep(null);
       fetchDeposits();
     } catch (err) {
       alert(err.message);
@@ -177,6 +205,60 @@ export default function DepositManagement() {
             </button>
          </div>
       </div>
+
+      {/* Approve Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+           <div className="bg-white rounded-[2.5rem] p-10 max-w-md w-full shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
+                 <Check size={80} className="text-emerald-500" />
+              </div>
+              
+              <h2 className="text-2xl font-black text-slate-900 mb-2">Approve Deposit</h2>
+              <p className="text-slate-500 text-sm font-medium mb-8">Enter the verified USD amount to credit to the user's account.</p>
+              
+              <div className="space-y-6">
+                 <div>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Verified Transaction Amount ($)</label>
+                    <div className="relative">
+                       <span className="absolute left-6 top-1/2 -translate-y-1/2 font-bold text-slate-400">$</span>
+                       <input 
+                         type="number"
+                         step="1"
+                         className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 pl-10 pr-6 text-2xl font-black text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500/50 transition-all"
+                         value={amount}
+                         onChange={(e) => setAmount(e.target.value)}
+                         autoFocus
+                       />
+                    </div>
+                 </div>
+
+                 <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                    <p className="text-xs text-emerald-800 font-medium break-all">
+                       <span className="font-bold">TXID:</span> {selectedDep?.transaction_hash}
+                    </p>
+                 </div>
+
+                 <div className="flex gap-4 pt-4">
+                     <button 
+                       onClick={() => setShowModal(false)}
+                       className="flex-1 py-4 px-6 bg-slate-100 text-slate-600 rounded-2xl font-black text-sm hover:bg-slate-200 transition-all"
+                     >
+                        Cancel
+                     </button>
+                     <button 
+                       onClick={confirmApproval}
+                       disabled={processing === selectedDep?.id}
+                       className="flex-1 py-4 px-6 bg-emerald-500 text-white rounded-2xl font-black text-sm hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
+                     >
+                        {processing === selectedDep?.id ? <Loader2 className="animate-spin" size={20} /> : <Check size={20} />}
+                        Confirm
+                     </button>
+                 </div>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   );
 }
