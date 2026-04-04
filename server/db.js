@@ -10,16 +10,17 @@ const poolConfig = process.env.DATABASE_URL
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    port: process.env.DB_PORT || 3306,
+    port: process.env.DB_PORT || 4000,
   };
 
 const pool = mysql.createPool({
   ...poolConfig,
-  connectionLimit: 10,
+  ssl: {
+    rejectUnauthorized: true
+  },
   waitForConnections: true,
-  queueLimit: 0,
-  // Disable strong SSL enforcement for local/shared dev environments unless specified
-  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: true } : false
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
 export default pool;
