@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Eye, Megaphone, TrendingUp, Wallet, ArrowUpRight, Loader2, Shield } from 'lucide-react';
+import { Megaphone, TrendingUp, Wallet, ArrowUpRight, Loader2, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { api } from '../../lib/api';
-import { getMainImage } from '../../utils/imageHelper';
+import { getMainImage, FALLBACK_IMAGE } from '../../utils/imageHelper';
 
 export default function DashboardHome() {
   const [stats, setStats] = useState({
     activeAds: 0,
-    totalViews: 0,
     balance: 0,
     bumpPoints: 0
   });
@@ -34,7 +33,6 @@ export default function DashboardHome() {
         
         setStats({
           activeAds: myAds.length,
-          totalViews: 0,
           balance: profile?.wallet_balance || 0,
           bumpPoints: 0
         });
@@ -61,7 +59,6 @@ export default function DashboardHome() {
     ? [{ title: 'Wallet Bal', val: `$${Number(stats.balance || 0).toFixed(2)}`, icon: Wallet, color: 'text-emerald-500', bg: 'bg-emerald-50' }]
     : [
         { title: 'Active Ads', val: stats.activeAds || 0, icon: Megaphone, color: 'text-blue-500', bg: 'bg-blue-50' },
-        { title: 'Total Views', val: stats.totalViews || 0, icon: Eye, color: 'text-purple-500', bg: 'bg-purple-50' },
         { title: 'Wallet Bal', val: `$${Number(stats.balance || 0).toFixed(2)}`, icon: Wallet, color: 'text-emerald-500', bg: 'bg-emerald-50' },
         { title: 'Bump Points', val: stats.bumpPoints, icon: TrendingUp, color: 'text-primary', bg: 'bg-primary/10' },
       ];
@@ -124,10 +121,10 @@ export default function DashboardHome() {
                    {recentAds.map((ad, idx) => (
                      <Link key={idx} to={`/profile/${ad.id}`} className="card-premium !p-4 bg-white flex items-center justify-between hover:border-primary/20 transition-all">
                         <div className="flex items-center gap-4">
-                       <img src={getMainImage(ad.photo_url)} className="w-16 h-16 rounded-2xl object-cover" alt="" />
+                       <img src={getMainImage(ad.photo_url)} onError={e => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }} className="w-16 h-16 rounded-2xl object-cover" alt="" />
                            <div>
                               <p className="font-bold text-slate-900">{ad.title}</p>
-                              <p className="text-slate-400 text-xs font-medium">{ad.city_name || 'N/A'} • 0 views</p>
+                              <p className="text-slate-400 text-xs font-medium">{ad.city_name || 'N/A'}</p>
                            </div>
                         </div>
                         <div className="flex items-center gap-6">
@@ -155,7 +152,7 @@ export default function DashboardHome() {
                    </div>
                    <h4 className="text-2xl font-bold mb-4 relative z-10">Boost Your Reach</h4>
                    <p className="text-white/80 text-sm leading-relaxed mb-8 relative z-10">
-                     Ads with the "Featured" badge get 10x more views on average. Upgrade your listing now!
+                     Ads with the "Featured" badge stand out more and attract more clients. Upgrade your listing now!
                    </p>
                    <Link to="/dashboard/ads" className="bg-white text-primary px-8 py-3 rounded-2xl font-bold text-sm hover:bg-slate-50 transition-colors shadow-xl inline-block">
                       Bump My Ads

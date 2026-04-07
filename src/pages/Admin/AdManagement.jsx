@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Search, Megaphone, MapPin, Trash2, Loader2, Eye, ShieldCheck, ShieldAlert, ExternalLink } from 'lucide-react';
+import { Search, Megaphone, MapPin, Trash2, Loader2, ShieldCheck, ShieldAlert, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { api } from '../../lib/api';
-import { getMainImage } from '../../utils/imageHelper';
+import { getMainImage, FALLBACK_IMAGE } from '../../utils/imageHelper';
 
 export default function AdManagement() {
   const [ads, setAds] = useState([]);
@@ -68,7 +68,7 @@ export default function AdManagement() {
                   <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Listing</th>
                   <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Location</th>
                   <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Status</th>
-                  <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Stats</th>
+                  <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Activity</th>
                   <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Actions</th>
                </tr>
             </thead>
@@ -85,7 +85,7 @@ export default function AdManagement() {
                     <td className="px-8 py-6">
                        <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden">
-                              <img src={getMainImage(ad.photo_url)} className="w-full h-full object-cover" alt="" />
+                              <img src={getMainImage(ad.photo_url)} onError={e => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }} className="w-full h-full object-cover" alt="" />
                           </div>
                            <div>
                               <p className="font-bold text-slate-900">{ad.title}</p>
@@ -105,7 +105,6 @@ export default function AdManagement() {
                     </td>
                     <td className="px-6 py-6">
                        <div className="flex items-center gap-4 text-slate-400">
-                          <div className="flex items-center gap-1 text-xs"><Eye size={14} /> 0</div>
                           <div className="flex items-center gap-1 text-xs"><Megaphone size={14} /> Bumped</div>
                        </div>
                     </td>

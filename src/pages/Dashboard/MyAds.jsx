@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Megaphone, PlusCircle, Eye, Clock, Edit, Trash2, ArrowUpCircle, Loader2 } from 'lucide-react';
+import { Megaphone, PlusCircle, Clock, Edit, Trash2, ArrowUpCircle, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { api } from '../../lib/api';
-import { getMainImage } from '../../utils/imageHelper';
+import { getMainImage, FALLBACK_IMAGE } from '../../utils/imageHelper';
 
 export default function MyAds() {
   const [ads, setAds] = useState([]);
@@ -78,10 +78,11 @@ export default function MyAds() {
          {ads.map(ad => (
            <div key={ad.id} className="card-premium !p-6 bg-white flex flex-col lg:flex-row items-center gap-8">
               <div className="w-full lg:w-48 h-48 rounded-[2rem] overflow-hidden flex-shrink-0 shadow-lg bg-slate-100">
-                 <img 
-                    src={getMainImage(ad.photo_url)} 
-                    className="w-24 h-24 rounded-2xl object-cover border border-gray-100 shadow-sm" 
-                    alt={ad.title} 
+                 <img
+                    src={getMainImage(ad.photo_url)}
+                    onError={e => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }}
+                    className="w-full h-full object-cover"
+                    alt={ad.title}
                  />
               </div>
               
@@ -94,9 +95,6 @@ export default function MyAds() {
                  </div>
                  
                  <div className="flex flex-wrap items-center gap-x-8 gap-y-2 text-sm">
-                    <div className="flex items-center gap-2 text-slate-400 font-medium">
-                       <Eye size={16} /> 0 views
-                    </div>
                      <div className="flex items-center gap-2 text-slate-400 font-medium font-bold italic">
                         {ad.city_name}, {ad.state_code}
                      </div>

@@ -5,7 +5,7 @@ import {
   Clock, Share2, Heart, ChevronLeft, ChevronRight, Loader2, AlertCircle
 } from 'lucide-react';
 import { api } from '../lib/api';
-import { getImageUrl, parsePhotos } from '../utils/imageHelper';
+import { getImageUrl, parsePhotos, FALLBACK_IMAGE } from '../utils/imageHelper';
 
 export default function Profile() {
   const { id } = useParams();
@@ -64,10 +64,11 @@ export default function Profile() {
         {/* Left: Photos */}
         <div className="lg:col-span-7">
           <div className="relative h-[600px] w-full rounded-[3rem] overflow-hidden shadow-2xl bg-slate-100">
-             <img 
-               src={images[activeImage]} 
-               className="w-full h-full object-cover transition-opacity duration-500" 
-               alt={`${ad.name} main`} 
+             <img
+               src={images[activeImage]}
+               onError={e => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }}
+               className="w-full h-full object-cover transition-opacity duration-500"
+               alt={`${ad.title} main`}
              />
              {images.length > 1 && (
                <div className="absolute inset-0 flex items-center justify-between px-6 opacity-0 hover:opacity-100 transition-opacity">
@@ -83,7 +84,7 @@ export default function Profile() {
                  onClick={() => setActiveImage(idx)}
                  className={`h-28 rounded-2xl overflow-hidden border-4 transition-all ${activeImage === idx ? 'border-primary' : 'border-transparent opacity-60 hover:opacity-100'}`}
                >
-                 <img src={img} className="w-full h-full object-cover" alt={`${ad.name} thumb ${idx}`} />
+                 <img src={img} onError={e => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }} className="w-full h-full object-cover" alt={`${ad.title} thumb ${idx}`} />
                </button>
              ))}
           </div>

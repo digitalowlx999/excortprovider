@@ -1,14 +1,8 @@
 import { Link } from 'react-router-dom';
-import { MapPin, Heart, Star, ShieldCheck, Clock } from 'lucide-react';
-import { BASE_URL } from '../lib/api';
+import { MapPin, Clock } from 'lucide-react';
+import { getImageUrl, FALLBACK_IMAGE } from '../utils/imageHelper';
 
 export default function ListingCard({ ad }) {
-  const getImageUrl = (url) => {
-    if (!url) return 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=600';
-    if (url.startsWith('http')) return url;
-    return `${BASE_URL}${url}`;
-  };
-
   const images = (() => {
     try {
       const parsed = JSON.parse(ad.photo_url);
@@ -19,13 +13,15 @@ export default function ListingCard({ ad }) {
   })();
 
   const mainImage = getImageUrl(images[0]);
+
   return (
     <div className="group card-premium !p-0 overflow-hidden flex flex-col h-full">
       <div className="h-80 relative overflow-hidden">
-        <img 
-          src={mainImage} 
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-          alt={ad.title} 
+        <img
+          src={mainImage}
+          onError={e => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          alt={ad.title}
         />
         <div className="absolute top-4 left-4 flex flex-col gap-2">
            {ad.is_featured ? (
@@ -42,7 +38,7 @@ export default function ListingCard({ ad }) {
             {ad.title}, {ad.age}
           </h3>
         </div>
-        
+
         <div className="flex items-center text-slate-400 text-xs gap-3 mb-4">
           <span className="flex items-center gap-1 font-medium"><MapPin size={12} /> {ad.city_name}</span>
           <span className="flex items-center gap-1 font-medium"><Clock size={12} /> {new Date(ad.created_at).toLocaleDateString()}</span>
@@ -52,8 +48,8 @@ export default function ListingCard({ ad }) {
           {ad.description}
         </p>
 
-        <Link 
-          to={`/profile/${ad.id}`} 
+        <Link
+          to={`/profile/${ad.id}`}
           className="w-full btn-secondary !py-3 !text-sm flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all duration-300"
         >
           View Profile

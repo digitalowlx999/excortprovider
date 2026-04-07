@@ -1,7 +1,9 @@
 import { BASE_URL } from '../lib/api';
 
+export const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=600';
+
 export const getImageUrl = (url) => {
-  if (!url) return 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=600';
+  if (!url) return FALLBACK_IMAGE;
   if (url.startsWith('http')) return url;
   // Prefix with server URL if relative
   const cleanUrl = url.startsWith('/') ? url : `/${url}`;
