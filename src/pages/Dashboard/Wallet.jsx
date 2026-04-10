@@ -113,8 +113,8 @@ export default function WalletView() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         <div className="lg:col-span-12 xl:col-span-7 space-y-10">
-          <div className="card-premium p-10 bg-white border-2 border-primary/5">
-            <div className="flex items-center gap-6 mb-10">
+          <div className="card-premium p-5 sm:p-10 bg-white border-2 border-primary/5">
+            <div className="flex items-center gap-4 sm:gap-6 mb-8 sm:mb-10">
               <div className="w-20 h-20 bg-primary/10 rounded-[2rem] flex items-center justify-center text-primary">
                 <Wallet size={40} />
               </div>
@@ -135,7 +135,7 @@ export default function WalletView() {
               </div>
             </div>
 
-            <div className="p-8 bg-slate-50 rounded-[2.5rem] mb-10 border border-gray-100">
+            <div className="p-4 sm:p-8 bg-slate-50 rounded-[2rem] sm:rounded-[2.5rem] mb-8 sm:mb-10 border border-gray-100">
               <h4 className="font-bold text-slate-900 mb-6 flex items-center gap-2">
                 <ArrowDownToLine size={20} className="text-primary" />
                 Deposit Funds
@@ -160,7 +160,7 @@ export default function WalletView() {
                 {/* Amount selector */}
                 <div>
                   <label className="block text-slate-500 text-xs font-bold uppercase tracking-wider mb-3 ml-2">Select an amount</label>
-                  <div className="grid grid-cols-3 gap-3 mb-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
                     {PRESET_AMOUNTS.map(amt => (
                       <button
                         key={amt}
