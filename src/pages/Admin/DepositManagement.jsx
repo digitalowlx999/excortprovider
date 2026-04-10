@@ -82,18 +82,18 @@ export default function DepositManagement() {
 
   return (
     <div className="space-y-12">
-      <div className="flex justify-between items-end">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
         <div>
-          <h1 className="text-4xl font-black text-slate-900 mb-2">Deposit Approvals</h1>
+          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 mb-2">Deposit Approvals</h1>
           <p className="text-slate-500 font-medium">Verify blockchain transactions and fund user wallets.</p>
         </div>
-        <div className="flex gap-4">
-           <div className="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center px-6 gap-3 min-w-[300px]">
-              <Search className="text-slate-300" size={18} />
-              <input 
-                type="text" 
-                placeholder="Search hash, email..." 
-                className="text-sm outline-none w-full" 
+        <div className="w-full sm:w-auto">
+           <div className="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center px-4 gap-3">
+              <Search className="text-slate-300 flex-shrink-0" size={18} />
+              <input
+                type="text"
+                placeholder="Search hash, email..."
+                className="text-sm outline-none w-full min-w-0"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
               />
@@ -101,8 +101,8 @@ export default function DepositManagement() {
         </div>
       </div>
 
-      <div className="card-premium !p-0 bg-white border border-gray-100 overflow-hidden shadow-sm">
-         <table className="w-full text-left">
+      <div className="card-premium !p-0 bg-white border border-gray-100 shadow-sm overflow-x-auto">
+         <table className="w-full text-left min-w-[700px]">
             <thead className="bg-slate-50/50 border-b border-gray-100">
                <tr>
                   <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400">Escort / User</th>
@@ -208,8 +208,8 @@ export default function DepositManagement() {
 
       {/* Approve Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
-           <div className="bg-white rounded-[2.5rem] p-10 max-w-md w-full shadow-2xl relative overflow-hidden">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[9999] flex items-end sm:items-center justify-center p-4">
+           <div className="bg-white rounded-t-[2rem] sm:rounded-[2.5rem] p-6 sm:p-10 max-w-md w-full shadow-2xl relative overflow-y-auto max-h-[90vh]">
               <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
                  <Check size={80} className="text-emerald-500" />
               </div>
