@@ -8,10 +8,14 @@ const router = express.Router();
 router.post('/', verifyToken, async (req, res) => {
   const { amount, currency, transaction_hash } = req.body;
   if (!transaction_hash) return res.status(400).json({ error: 'Transaction hash is required' });
+  const parsedAmount = parseFloat(amount);
+  if (!parsedAmount || parsedAmount < 100) {
+    return res.status(400).json({ error: 'Minimum deposit amount is $100' });
+  }
   try {
     await pool.execute(
       'INSERT INTO deposits (user_id, amount, currency, transaction_hash, status) VALUES (?, ?, ?, ?, ?)',
-      [req.user.id, amount || 0, currency || 'BTC', transaction_hash, 'pending']
+      [req.user.id, parsedAmount, currency || 'BTC', transaction_hash, 'pending']
     );
     res.status(201).json({ message: 'Deposit submitted for verification' });
   } catch (err) {

@@ -34,7 +34,7 @@ export default function DepositManagement() {
     if (action === 'approve') {
        const dep = deposits.find(d => d.id === id);
        setSelectedDep(dep);
-       setAmount('100');
+       setAmount(dep.amount ? String(parseFloat(dep.amount).toFixed(0)) : '100');
        setShowModal(true);
        return;
     }
@@ -215,11 +215,19 @@ export default function DepositManagement() {
               </div>
               
               <h2 className="text-2xl font-black text-slate-900 mb-2">Approve Deposit</h2>
-              <p className="text-slate-500 text-sm font-medium mb-8">Enter the verified USD amount to credit to the user's account.</p>
-              
+              <p className="text-slate-500 text-sm font-medium mb-6">Confirm the amount to credit to <span className="font-bold text-slate-700">{selectedDep?.alias || selectedDep?.email}</span>'s wallet.</p>
+
+              <div className="mb-6 p-4 bg-blue-50 rounded-2xl border border-blue-100 flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-1">User Declared Amount</p>
+                  <p className="text-2xl font-black text-blue-700">${parseFloat(selectedDep?.amount || 0).toFixed(2)}</p>
+                </div>
+                <span className="px-3 py-1 bg-blue-100 text-blue-600 text-[9px] font-black rounded-full uppercase">{selectedDep?.currency}</span>
+              </div>
+
               <div className="space-y-6">
                  <div>
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Verified Transaction Amount ($)</label>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Amount to Credit ($)</label>
                     <div className="relative">
                        <span className="absolute left-6 top-1/2 -translate-y-1/2 font-bold text-slate-400">$</span>
                        <input 
