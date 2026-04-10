@@ -1,10 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Wallet, Info, Copy, CheckCircle2, History, ArrowDownToLine, Bitcoin, Coins, DollarSign, Loader2, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
 
 const PRESET_AMOUNTS = [100, 200, 300, 500, 1000];
 
 export default function WalletView() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user.role === 'viewer') navigate('/dashboard', { replace: true });
+  }, [navigate]);
+
   const [balance, setBalance] = useState(0);
   const [deposits, setDeposits] = useState([]);
   const [loading, setLoading] = useState(true);

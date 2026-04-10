@@ -55,8 +55,8 @@ export default function DashboardHome() {
     );
   }
 
-  const statCards = userRole === 'viewer' 
-    ? [{ title: 'Wallet Bal', val: `$${Number(stats.balance || 0).toFixed(2)}`, icon: Wallet, color: 'text-emerald-500', bg: 'bg-emerald-50' }]
+  const statCards = userRole === 'viewer'
+    ? []
     : [
         { title: 'Active Ads', val: stats.activeAds || 0, icon: Megaphone, color: 'text-blue-500', bg: 'bg-blue-50' },
         { title: 'Wallet Bal', val: `$${Number(stats.balance || 0).toFixed(2)}`, icon: Wallet, color: 'text-emerald-500', bg: 'bg-emerald-50' },

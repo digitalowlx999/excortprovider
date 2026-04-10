@@ -65,8 +65,10 @@ export default function DashboardLayout() {
 
   const menuItems = [
     { title: 'Overview', icon: LayoutDashboard, path: '/dashboard' },
-    ...(user?.role !== 'viewer' ? [{ title: 'My Ads', icon: Megaphone, path: '/dashboard/ads' }] : []),
-    { title: 'Wallet', icon: Wallet, path: '/dashboard/wallet' },
+    ...(user?.role !== 'viewer' ? [
+      { title: 'My Ads', icon: Megaphone, path: '/dashboard/ads' },
+      { title: 'Wallet', icon: Wallet, path: '/dashboard/wallet' },
+    ] : []),
     { title: 'Settings', icon: Settings, path: '/dashboard/settings' },
   ];
 
@@ -146,10 +148,12 @@ export default function DashboardLayout() {
             </div>
 
             <div className="flex items-center gap-3">
-               <div className="hidden md:flex flex-col items-end mr-1">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Wallet Balance</span>
-                  <span className="text-primary font-black text-lg">${Number(user?.wallet_balance || 0).toFixed(2)}</span>
-               </div>
+               {user?.role !== 'viewer' && (
+                 <div className="hidden md:flex flex-col items-end mr-1">
+                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Wallet Balance</span>
+                   <span className="text-primary font-black text-lg">${Number(user?.wallet_balance || 0).toFixed(2)}</span>
+                 </div>
+               )}
                <button className="p-2.5 bg-slate-50 rounded-2xl text-slate-400 hover:text-primary transition-colors relative">
                   <Bell size={18} />
                   <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-primary rounded-full ring-2 ring-white"></span>
