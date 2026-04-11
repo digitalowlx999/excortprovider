@@ -24,12 +24,14 @@ export const api = {
     return res.json();
   },
   put: async (endpoint, body, token) => {
-    const headers = { 'Content-Type': 'application/json' };
+    const isFormData = body instanceof FormData;
+    const headers = {};
+    if (!isFormData) headers['Content-Type'] = 'application/json';
     if (token) headers['Authorization'] = `Bearer ${token}`;
     const res = await fetch(`${API_BASE}${endpoint}`, {
       method: 'PUT',
       headers,
-      body: JSON.stringify(body)
+      body: isFormData ? body : JSON.stringify(body)
     });
     if (!res.ok) throw new Error(await res.text());
     return res.json();
