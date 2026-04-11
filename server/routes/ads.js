@@ -1,13 +1,46 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import pool from '../db.js';
+import multer from 'multer';
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
 const router = express.Router();
 
-// Get all ads (with filtering)
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Cloudinary storage for multer
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'escort_provider_ads',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+    transformation: [{ width: 1200, height: 1600, crop: 'limit', quality: 'auto' }],
+  },
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
+
+// Auth helper
+function getUserFromToken(req) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) throw new Error('No token');
+  const token = authHeader.split(' ')[1];
+  return jwt.verify(token, process.env.JWT_SECRET);
+}
+
+// GET all ads (with filtering)
 router.get('/', async (req, res) => {
   const { city, featured } = req.query;
-  let query = 'SELECT a.*, c.name as city_name, c.slug as city_slug, s.name as state_name FROM ads a LEFT JOIN cities c ON a.city_id = c.id LEFT JOIN states s ON c.state_id = s.id';
+  let query = 'SELECT a.*, c.name as city_name, c.slug as city_slug, s.name as state_name, s.code as state_code FROM ads a LEFT JOIN cities c ON a.city_id = c.id LEFT JOIN states s ON c.state_id = s.id';
   const params = [];
 
   if (city || featured) {
@@ -38,12 +71,12 @@ router.get('/', async (req, res) => {
     const [ads] = await pool.query(query, params);
     res.json(ads);
   } catch (err) {
-    console.error("Fetch ads error:", err);
+    console.error('Fetch ads error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Get single ad by ID
+// GET single ad by ID
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -54,56 +87,37 @@ router.get('/:id', async (req, res) => {
     if (rows.length === 0) return res.status(404).json({ error: 'Ad not found' });
     res.json(rows[0]);
   } catch (err) {
-    console.error("Fetch ads error:", err);
+    console.error('Fetch ad error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-import multer from 'multer';
-import path from 'path';
-
-// Configure Multer Storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // Ensure this folder exists or gets created
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-const upload = multer({ 
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB max
-});
-
-// Post Ad
+// POST new ad
 router.post('/', upload.array('photos', 4), async (req, res) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ error: 'No token' });
-
-  const token = authHeader.split(' ')[1];
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = getUserFromToken(req);
     const { title, description, age, city_id } = req.body;
-    
-    // Process uploaded files
+
+    if (!title || !city_id) {
+      return res.status(400).json({ error: 'Title and city are required' });
+    }
+
+    // Build photo URL array from Cloudinary responses
     let photoUrls = [];
     if (req.files && req.files.length > 0) {
-      photoUrls = req.files.map(file => `/uploads/${file.filename}`);
+      photoUrls = req.files.map(file => file.path); // Cloudinary returns secure_url as file.path
     } else if (req.body.photo_url) {
-      // Fallback for older clients sending string URL
       photoUrls = [req.body.photo_url];
     }
-    
-    // Store as JSON string or single string (if only 1)
+
     const storedPhotoUrl = JSON.stringify(photoUrls);
 
-    // Check balance (minimum $10) - Skip for Admin
+    // Check balance — skip for admin
     if (decoded.role !== 'admin') {
       const [users] = await pool.execute('SELECT wallet_balance FROM users WHERE id = ?', [decoded.id]);
-      if (users[0].wallet_balance < 10) return res.status(400).json({ error: 'Insufficient balance' });
+      if (!users.length || users[0].wallet_balance < 10) {
+        return res.status(400).json({ error: 'Insufficient balance. You need at least $10 to post an ad.' });
+      }
     }
 
     await pool.execute(
@@ -117,25 +131,64 @@ router.post('/', upload.array('photos', 4), async (req, res) => {
 
     res.status(201).json({ message: 'Ad posted successfully' });
   } catch (err) {
-    console.error("Post ad error:", err);
+    console.error('Post ad error:', err);
     res.status(401).json({ error: 'Invalid token or server error' });
   }
 });
 
-// Delete Ad
-router.delete('/:id', async (req, res) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ error: 'No token' });
-
-  const token = authHeader.split(' ')[1];
+// PUT edit ad
+router.put('/:id', upload.array('photos', 4), async (req, res) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = getUserFromToken(req);
     const { id } = req.params;
+    const { title, description, age, city_id, existing_photos } = req.body;
 
-    // Check if user owns the ad or is admin
+    // Check ownership
     const [rows] = await pool.execute('SELECT * FROM ads WHERE id = ?', [id]);
     if (rows.length === 0) return res.status(404).json({ error: 'Ad not found' });
-    
+    if (rows[0].user_id !== decoded.id && decoded.role !== 'admin') {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    // Merge kept existing photos with any newly uploaded ones
+    let keptPhotos = [];
+    if (existing_photos) {
+      try {
+        keptPhotos = JSON.parse(existing_photos);
+      } catch {
+        keptPhotos = [existing_photos];
+      }
+    }
+
+    let newPhotoUrls = [];
+    if (req.files && req.files.length > 0) {
+      newPhotoUrls = req.files.map(file => file.path);
+    }
+
+    const allPhotos = [...keptPhotos, ...newPhotoUrls].slice(0, 4);
+    const storedPhotoUrl = JSON.stringify(allPhotos);
+
+    await pool.execute(
+      'UPDATE ads SET title = ?, description = ?, age = ?, city_id = ?, photo_url = ? WHERE id = ?',
+      [title, description, age, city_id, storedPhotoUrl, id]
+    );
+
+    res.json({ message: 'Ad updated successfully' });
+  } catch (err) {
+    console.error('Edit ad error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// DELETE ad
+router.delete('/:id', async (req, res) => {
+  try {
+    const decoded = getUserFromToken(req);
+    const { id } = req.params;
+
+    const [rows] = await pool.execute('SELECT * FROM ads WHERE id = ?', [id]);
+    if (rows.length === 0) return res.status(404).json({ error: 'Ad not found' });
+
     if (rows[0].user_id !== decoded.id && decoded.role !== 'admin') {
       return res.status(403).json({ error: 'Forbidden' });
     }
@@ -147,29 +200,21 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// Bump Ad to Top
+// PUT bump ad to top
 router.put('/:id/bump', async (req, res) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ error: 'No token' });
-
-  const token = authHeader.split(' ')[1];
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = getUserFromToken(req);
     const { id } = req.params;
 
-    // Check if user owns the ad
     const [rows] = await pool.execute('SELECT * FROM ads WHERE id = ?', [id]);
     if (rows.length === 0) return res.status(404).json({ error: 'Ad not found' });
-    
-    if (rows[0].user_id !== decoded.id) {
-      return res.status(403).json({ error: 'Forbidden' });
+    if (rows[0].user_id !== decoded.id) return res.status(403).json({ error: 'Forbidden' });
+
+    const [users] = await pool.execute('SELECT wallet_balance FROM users WHERE id = ?', [decoded.id]);
+    if (users[0].wallet_balance < 5) {
+      return res.status(400).json({ error: 'Insufficient balance to bump ad. Please deposit funds.' });
     }
 
-    // Check balance (cost $5)
-    const [users] = await pool.execute('SELECT wallet_balance FROM users WHERE id = ?', [decoded.id]);
-    if (users[0].wallet_balance < 5) return res.status(400).json({ error: 'Insufficient balance to bump ad. Please deposit funds.' });
-
-    // Deduct $5 and update created_at time
     await pool.execute('UPDATE users SET wallet_balance = wallet_balance - 5 WHERE id = ?', [decoded.id]);
     await pool.execute('UPDATE ads SET created_at = CURRENT_TIMESTAMP WHERE id = ?', [id]);
 

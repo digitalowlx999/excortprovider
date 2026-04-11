@@ -14,6 +14,7 @@ import ResetPassword from './pages/ResetPassword';
 import DashboardLayout from './pages/Dashboard/DashboardLayout';
 import DashboardHome from './pages/Dashboard/DashboardHome';
 import PostAd from './pages/Dashboard/PostAd';
+import EditAd from './pages/Dashboard/EditAd';
 import WalletView from './pages/Dashboard/Wallet';
 import MyAds from './pages/Dashboard/MyAds';
 import AdminLayout from './pages/Admin/AdminLayout';
@@ -49,6 +50,7 @@ function App() {
               <Route path="ads" element={<MyAds />} />
               <Route path="wallet" element={<WalletView />} />
               <Route path="post-ad" element={<PostAd />} />
+              <Route path="edit-ad/:id" element={<EditAd />} />
               <Route path="settings" element={<UserSettings />} />
             </Route>
             <Route path="/admin" element={<AdminLayout />}>

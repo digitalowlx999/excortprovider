@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Megaphone, PlusCircle, Clock, Edit, Trash2, ArrowUpCircle, Loader2 } from 'lucide-react';
+import { Megaphone, PlusCircle, Edit, Trash2, ArrowUpCircle, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { getMainImage, FALLBACK_IMAGE } from '../../utils/imageHelper';
@@ -14,7 +14,6 @@ export default function MyAds() {
 
   async function fetchMyAds() {
     setLoading(true);
-    const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     try {
       const allAds = await api.get('/ads');
@@ -110,9 +109,9 @@ export default function MyAds() {
                     >
                        <ArrowUpCircle size={14} /> Bump Ad ($5)
                     </button>
-                    <button className="btn-secondary !py-2 !px-6 !text-xs flex items-center gap-2">
+                    <Link to={`/dashboard/edit-ad/${ad.id}`} className="btn-secondary !py-2 !px-6 !text-xs flex items-center gap-2">
                        <Edit size={14} /> Edit
-                    </button>
+                    </Link>
                     <button 
                       onClick={() => handleDelete(ad.id)}
                       className="btn-secondary !py-2 !px-6 !text-xs flex items-center gap-2 !text-red-500 !border-red-100 hover:!bg-red-50"
