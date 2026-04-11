@@ -5,7 +5,7 @@ import ListingCard from '../components/ListingCard';
 import { api } from '../lib/api';
 
 export default function CityListing() {
-  const { city: citySlug } = useParams();
+  const { slug: citySlug } = useParams();
   const [ads, setAds] = useState([]);
   const [cityData, setCityData] = useState(null);
   const [loading, setLoading] = useState(true);

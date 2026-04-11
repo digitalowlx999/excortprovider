@@ -102,19 +102,21 @@ export default function UserSettings() {
            </form>
         </div>
 
-        <div className="md:col-span-4 space-y-8">
-           <div className="card-premium p-8 bg-slate-900 text-white border-none shadow-2xl shadow-slate-900/20">
-              <h4 className="font-bold mb-6 flex items-center gap-2">
-                 <Wallet size={18} className="text-primary" />
-                 Wallet Status
-              </h4>
-              <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Available Funds</p>
-              <p className="text-3xl font-black mb-6">${Number(profile.wallet_balance || 0).toFixed(2)}</p>
-              <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                 <div className="h-full bg-primary w-1/3"></div>
-              </div>
-           </div>
-        </div>
+        {profile.role !== 'viewer' && (
+          <div className="md:col-span-4 space-y-8">
+             <div className="card-premium p-8 bg-slate-900 text-white border-none shadow-2xl shadow-slate-900/20">
+                <h4 className="font-bold mb-6 flex items-center gap-2">
+                   <Wallet size={18} className="text-primary" />
+                   Wallet Status
+                </h4>
+                <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Available Funds</p>
+                <p className="text-3xl font-black mb-6">${Number(profile.wallet_balance || 0).toFixed(2)}</p>
+                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                   <div className="h-full bg-primary w-1/3"></div>
+                </div>
+             </div>
+          </div>
+        )}
       </div>
     </div>
   );
