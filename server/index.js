@@ -69,13 +69,24 @@ app.use((err, req, res, _next) => {
 
 // Run DB migrations on startup
 async function runMigrations() {
-  try {
+  const migrations = [
     // Widen photo_url to TEXT to support full Cloudinary URLs in JSON arrays
-    await pool.execute('ALTER TABLE ads MODIFY COLUMN photo_url TEXT');
-    console.log('DB migration: ads.photo_url widened to TEXT');
-  } catch (err) {
-    // Ignore — column is already TEXT, or DB not yet connected
-    console.log('DB migration skipped (already applied or DB unavailable):', err.code || err.message);
+    'ALTER TABLE ads MODIFY COLUMN photo_url TEXT',
+    // Add contact fields if they don't already exist
+    'ALTER TABLE ads ADD COLUMN IF NOT EXISTS phone VARCHAR(50) DEFAULT NULL',
+    'ALTER TABLE ads ADD COLUMN IF NOT EXISTS whatsapp VARCHAR(50) DEFAULT NULL',
+    'ALTER TABLE ads ADD COLUMN IF NOT EXISTS telegram VARCHAR(100) DEFAULT NULL',
+    'ALTER TABLE ads ADD COLUMN IF NOT EXISTS instagram VARCHAR(100) DEFAULT NULL',
+  ];
+
+  for (const sql of migrations) {
+    try {
+      await pool.execute(sql);
+      console.log('Migration OK:', sql.slice(0, 60));
+    } catch (err) {
+      // Errors like "Duplicate column" are expected on re-runs — safe to ignore
+      console.log('Migration skipped:', err.code || err.message);
+    }
   }
 }
 

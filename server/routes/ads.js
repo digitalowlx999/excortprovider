@@ -112,7 +112,7 @@ router.post('/', (req, _res, next) => {
   }
 }, upload.array('photos', 4), async (req, res) => {
   try {
-    const { title, description, age, city_id } = req.body;
+    const { title, description, age, city_id, phone, whatsapp, telegram, instagram } = req.body;
     const decoded = req.decodedUser;
 
     if (!title || !city_id) {
@@ -134,8 +134,9 @@ router.post('/', (req, _res, next) => {
     }
 
     await pool.execute(
-      'INSERT INTO ads (user_id, title, description, age, city_id, photo_url) VALUES (?, ?, ?, ?, ?, ?)',
-      [decoded.id, title, description || '', age || null, city_id, JSON.stringify(photoUrls)]
+      'INSERT INTO ads (user_id, title, description, age, city_id, photo_url, phone, whatsapp, telegram, instagram) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [decoded.id, title, description || '', age || null, city_id, JSON.stringify(photoUrls),
+       phone || null, whatsapp || null, telegram || null, instagram || null]
     );
 
     if (decoded.role !== 'admin') {
@@ -164,7 +165,7 @@ router.put('/:id', (req, _res, next) => {
   try {
     const decoded = req.decodedUser;
     const { id } = req.params;
-    const { title, description, age, city_id, existing_photos } = req.body;
+    const { title, description, age, city_id, existing_photos, phone, whatsapp, telegram, instagram } = req.body;
 
     // Validate ownership
     const [rows] = await pool.execute('SELECT user_id FROM ads WHERE id = ?', [id]);
@@ -196,8 +197,9 @@ router.put('/:id', (req, _res, next) => {
     }
 
     await pool.execute(
-      'UPDATE ads SET title = ?, description = ?, age = ?, city_id = ?, photo_url = ? WHERE id = ?',
-      [title, description || '', age || null, city_id, JSON.stringify(allPhotos), id]
+      'UPDATE ads SET title = ?, description = ?, age = ?, city_id = ?, photo_url = ?, phone = ?, whatsapp = ?, telegram = ?, instagram = ? WHERE id = ?',
+      [title, description || '', age || null, city_id, JSON.stringify(allPhotos),
+       phone || null, whatsapp || null, telegram || null, instagram || null, id]
     );
 
     res.json({ message: 'Ad updated successfully' });

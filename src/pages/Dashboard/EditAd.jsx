@@ -19,6 +19,9 @@ export default function EditAd() {
     description: '',
     hourlyRate: '',
     phone: '',
+    whatsapp: '',
+    telegram: '',
+    instagram: '',
   });
 
   const [existingPhotos, setExistingPhotos] = useState([]); // URLs already on server
@@ -43,6 +46,9 @@ export default function EditAd() {
           description: data.description || '',
           hourlyRate: '',
           phone: data.phone || '',
+          whatsapp: data.whatsapp || '',
+          telegram: data.telegram || '',
+          instagram: data.instagram || '',
         });
         setCitySearch(data.city_name ? `${data.city_name}, ${data.state_code}` : '');
         const photos = parsePhotos(data.photo_url);
@@ -109,6 +115,10 @@ export default function EditAd() {
       data.append('age', formData.age);
       data.append('city_id', formData.cityId);
       data.append('description', formData.description);
+      data.append('phone', formData.phone);
+      data.append('whatsapp', formData.whatsapp);
+      data.append('telegram', formData.telegram);
+      data.append('instagram', formData.instagram);
       data.append('existing_photos', JSON.stringify(existingPhotos));
 
       newImages.forEach(file => data.append('photos', file));
@@ -307,13 +317,46 @@ export default function EditAd() {
                 </div>
               </div>
               <div>
-                <label className="block text-slate-700 font-bold mb-2 ml-1">WhatsApp / Phone</label>
+                <label className="block text-slate-700 font-bold mb-2 ml-1">Phone Number</label>
                 <input
                   type="text"
                   className="input-field px-6 py-4"
-                  placeholder="+1..."
+                  placeholder="+1 555 000 0000"
                   value={formData.phone}
                   onChange={e => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+              <div>
+                <label className="block text-slate-700 font-bold mb-2 ml-1">WhatsApp</label>
+                <input
+                  type="text"
+                  className="input-field px-6 py-4"
+                  placeholder="+1 555 000 0000"
+                  value={formData.whatsapp}
+                  onChange={e => setFormData(prev => ({ ...prev, whatsapp: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="block text-slate-700 font-bold mb-2 ml-1">Telegram</label>
+                <input
+                  type="text"
+                  className="input-field px-6 py-4"
+                  placeholder="@username"
+                  value={formData.telegram}
+                  onChange={e => setFormData(prev => ({ ...prev, telegram: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="block text-slate-700 font-bold mb-2 ml-1">Instagram</label>
+                <input
+                  type="text"
+                  className="input-field px-6 py-4"
+                  placeholder="@username"
+                  value={formData.instagram}
+                  onChange={e => setFormData(prev => ({ ...prev, instagram: e.target.value }))}
                 />
               </div>
             </div>

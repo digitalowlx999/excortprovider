@@ -17,7 +17,10 @@ export default function PostAd() {
     description: '',
     hourlyRate: '',
     phone: '',
-    images: [] // Storing File objects
+    whatsapp: '',
+    telegram: '',
+    instagram: '',
+    images: []
   });
 
   const [userBalance, setUserBalance] = useState(0);
@@ -116,7 +119,11 @@ export default function PostAd() {
       data.append('age', formData.age);
       data.append('city_id', formData.cityId);
       data.append('description', formData.description);
-      
+      data.append('phone', formData.phone);
+      data.append('whatsapp', formData.whatsapp);
+      data.append('telegram', formData.telegram);
+      data.append('instagram', formData.instagram);
+
       formData.images.forEach(file => {
         data.append('photos', file);
       });
@@ -295,13 +302,46 @@ export default function PostAd() {
                     </div>
                  </div>
                  <div>
-                    <label className="block text-slate-700 font-bold mb-2 ml-1">WhatsApp / Phone</label>
-                    <input 
-                      type="text" 
-                      className="input-field px-6 py-4" 
-                      placeholder="+1..." 
+                    <label className="block text-slate-700 font-bold mb-2 ml-1">Phone Number</label>
+                    <input
+                      type="text"
+                      className="input-field px-6 py-4"
+                      placeholder="+1 555 000 0000"
                       value={formData.phone}
                       onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    />
+                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                 <div>
+                    <label className="block text-slate-700 font-bold mb-2 ml-1">WhatsApp</label>
+                    <input
+                      type="text"
+                      className="input-field px-6 py-4"
+                      placeholder="+1 555 000 0000"
+                      value={formData.whatsapp}
+                      onChange={(e) => setFormData({...formData, whatsapp: e.target.value})}
+                    />
+                 </div>
+                 <div>
+                    <label className="block text-slate-700 font-bold mb-2 ml-1">Telegram</label>
+                    <input
+                      type="text"
+                      className="input-field px-6 py-4"
+                      placeholder="@username"
+                      value={formData.telegram}
+                      onChange={(e) => setFormData({...formData, telegram: e.target.value})}
+                    />
+                 </div>
+                 <div>
+                    <label className="block text-slate-700 font-bold mb-2 ml-1">Instagram</label>
+                    <input
+                      type="text"
+                      className="input-field px-6 py-4"
+                      placeholder="@username"
+                      value={formData.instagram}
+                      onChange={(e) => setFormData({...formData, instagram: e.target.value})}
                     />
                  </div>
               </div>
